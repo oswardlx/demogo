@@ -1,31 +1,25 @@
 package com.example.controller;
 
-import com.example.entity.Man;
-import com.example.service.ManService;
-import com.example.service.PdfExportServiceImpl;
 import com.example.service.UserService;
-import com.example.util.map.PdfView;
+import com.example.util.test.PrePdf;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.View;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import javax.servlet.http.HttpServletResponse;
+import java.io.OutputStream;
 
 @RestController
 @RequestMapping("/testBoot")
 public class UserController {
     @Autowired
     private UserService userService;
-    @Autowired
-    private ManService manService;
+
 
     @Autowired
-    private PdfExportServiceImpl exportService;
+    private PrePdf prePdf;
+
+
 
     @RequestMapping("getUser/{id}")
     public String GetUser(@PathVariable int id){
@@ -39,14 +33,9 @@ public class UserController {
     }
 
     @RequestMapping("/export/pdf")
-    public ModelAndView exportPdf(){
-        List<Man> manList = manService.getManList();
-        Map<String,Object> map = new HashMap<>();
-        map.put("manList",manList);
-        View view = new PdfView(exportService.make(map,));
-        ModelAndView mv = new ModelAndView();
-        mv.setView(view);
-        return mv;
+    public void exportPdf(HttpServletResponse response) throws Exception {
+        OutputStream outputStream = response.getOutputStream();
+        prePdf.createPDF(outputStream);
     }
 
 
