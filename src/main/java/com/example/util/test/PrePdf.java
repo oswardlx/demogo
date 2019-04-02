@@ -13,8 +13,7 @@ public class PrePdf {
     public static  void main(String[] args) throws Exception {
 //        createPDF();
     }
-    public  String createPDF(OutputStream outputStream) throws Exception{
-        String outPath = "/Users/oswardliu/IdeaProjects/demo/src/main/resources/templates/test"+System.currentTimeMillis()+".pdf";
+    public  void createPDF(OutputStream outputStream) throws Exception{
         //设置纸张
         Rectangle rect = new Rectangle(PageSize.A4);
         //设置横向
@@ -29,8 +28,6 @@ public class PrePdf {
         //设置字体样式
         Font textFont = new Font(bfChinese,11,Font.NORMAL); //正常
 
-        //手指图片
-        Image hand = Image.getInstance("/Users/oswardliu/IdeaProjects/demo/src/main/resources/templates/gogo.jpg");
 
         //创建输出流
         PdfWriter.getInstance(doc,outputStream );
@@ -44,7 +41,6 @@ public class PrePdf {
         doc.add(c1);
 
         doc.close();
-        return outPath;
     }
 
 }
