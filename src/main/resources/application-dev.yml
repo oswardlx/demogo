@@ -1,0 +1,20 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    username: root
+    password: 123!@#qwe
+    url: jdbc:mysql://cdb-ek9ja7wm.cd.tencentcdb.com:10000/employees
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+mybatis:
+  mapper-locations: classpath:mapping/*Mapping.xml
+  type-aliases-package: com.example.entity
+
+##showSql
+#loging:
+#  level:
+#    com:
+#      example:
+#        mapper: debug
