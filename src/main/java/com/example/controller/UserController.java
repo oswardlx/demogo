@@ -45,6 +45,7 @@ public class UserController {
         OutputStream outputStream = response.getOutputStream();
         prePdf.createPDF(outputStream);
     }
+    @CrossOrigin
     @RequestMapping(value = "/export/pdf2",method = RequestMethod.POST)
     public String exportPdf2(HttpServletRequest request,HttpServletResponse response, @RequestParam String nodeInfo) throws Exception {
         OutputStream outputStream = response.getOutputStream();

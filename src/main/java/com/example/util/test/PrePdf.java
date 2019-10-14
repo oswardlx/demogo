@@ -294,7 +294,7 @@ public class PrePdf {
         document.close();
 
         String timestamp = System.currentTimeMillis()+"";
-        String tempFilePath = "/gogo"+timestamp+".pdf";
+        String tempFilePath = "gogo"+timestamp+".pdf";
         File pdfFile = new File(path + parentPath+tempFilePath);
         if (pdfFile.exists()) {
             pdfFile.delete();
