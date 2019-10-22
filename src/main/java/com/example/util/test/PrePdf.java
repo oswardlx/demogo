@@ -274,8 +274,8 @@ public class PrePdf {
      * @date 2019-08-01 20:36
      */
     public  String decompling( JSONArray nodeJsonObj) throws Exception {
-        String path = ClassUtils.getDefaultClassLoader().getResource("").getPath();
-        String parentPath = "/templates";
+        String path = ClassUtils.getDefaultClassLoader().getResource("").getPath() ;
+        String parentPath = "/static/templates";
 //        String path2 = request.getSession().getServletContext().getContextPath() + parentPath;
 //        String result = nodeJsonObj.toJSONString();
 //        System.out.println(result);
@@ -294,11 +294,12 @@ public class PrePdf {
         document.close();
 
         String timestamp = System.currentTimeMillis()+"";
-        String tempFilePath = "gogo"+timestamp+".pdf";
+        String tempFilePath = "/gogo"+timestamp+".pdf";
         File pdfFile = new File(path + parentPath+tempFilePath);
         if (pdfFile.exists()) {
             pdfFile.delete();
         }
+//        pdfFile.createNewFile();
 //        pdfFile.createNewFile();
         byte bWrite[] = os.toByteArray();
         OutputStream fileOs = new FileOutputStream(pdfFile);
@@ -307,7 +308,7 @@ public class PrePdf {
         }
         fileOs.close();
         os.close();
-        return path+tempFilePath;
+        return parentPath+tempFilePath;
 
     }
 
