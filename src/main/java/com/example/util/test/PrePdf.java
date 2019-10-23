@@ -313,9 +313,14 @@ public class PrePdf {
 
     }
 
-
+    /**
+     * @description 开始解析
+     * @author      刘鑫（1661）
+     * @return      java.util.ArrayList<com.itextpdf.text.Element>
+     * @Params      [mainArr]
+     * @date        2019/10/22 22:03
+     */
     public ArrayList<Element> countChange(JSONArray mainArr) throws IOException, DocumentException {
-
         ArrayList<Element> docElements;
         docElements = parseChildren(mainArr);
         return docElements;
@@ -484,6 +489,10 @@ public class PrePdf {
         int paddingBottom = jsonObject.getIntValue("paddingBottom");
         int horizontalAlignment = jsonObject.getIntValue("horizontalAlignment");
         int verticalAlignment = jsonObject.getIntValue("verticalAlignment");
+        float borderWidthLeft = jsonObject.getFloatValue("borderWidthLeft");
+        float borderWidthRight = jsonObject.getFloatValue("borderWidthRight");
+        float borderWidthTop = jsonObject.getFloatValue("borderWidthTop");
+        float borderWidthBottom = jsonObject.getFloatValue("borderWidthBottom");
         JSONArray paragraphJsonObjArr = jsonObject.getJSONArray("children");
         JSONObject pgphJsonObj = paragraphJsonObjArr.getJSONObject(0);
         Paragraph paragraph = initParagraph(pgphJsonObj);
@@ -498,6 +507,10 @@ public class PrePdf {
         pdfPCell.setPaddingBottom(paddingBottom);
         pdfPCell.setHorizontalAlignment(horizontalAlignment);
         pdfPCell.setVerticalAlignment(verticalAlignment);
+        pdfPCell.setBorderWidthLeft(borderWidthLeft);
+        pdfPCell.setBorderWidthRight(borderWidthRight);
+        pdfPCell.setBorderWidthTop(borderWidthTop);
+        pdfPCell.setBorderWidthBottom(borderWidthBottom);
         pdfPCell.setBorder(PdfPCell.BOX);
 //        ArrayList<Element> elements = parseChildren(jsonObject.getJSONArray("children"));
 //        pdfPCell.addElement(elements.get(0));
