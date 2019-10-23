@@ -49,8 +49,9 @@ public class UserController {
     @RequestMapping(value = "/export/pdf2",method = RequestMethod.POST)
     public String exportPdf2(HttpServletRequest request,HttpServletResponse response, @RequestParam String nodeInfo) throws Exception {
         OutputStream outputStream = response.getOutputStream();
-        JSONArray nodeJsonObj = JSONArray.parseArray(nodeInfo);
-        String result = prePdf.decompling(nodeJsonObj);
+
+        JSONObject obj = JSON.parseObject(nodeInfo);
+        String result = prePdf.decompling(obj);
         return result;
     }
 
