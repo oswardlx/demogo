@@ -13,6 +13,7 @@ import org.springframework.util.ClassUtils;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 @Service
 public class PrePdf {
@@ -310,6 +311,7 @@ public class PrePdf {
         return parentPath+tempFilePath;
 
     }
+
     /**
      * @description 初始化参数
      * @author      刘鑫（1661）
@@ -320,9 +322,10 @@ public class PrePdf {
     public static void initData(){
         JSONObject dataMap = new JSONObject();
         dataMap.put("param1","参数1");
-        dataMap.put("param2","参数3");
+        dataMap.put("param2","参数2");
         data = dataMap;
     }
+
     /**
      * @description 开始解析
      * @author      刘鑫（1661）
@@ -428,8 +431,13 @@ public class PrePdf {
         Font textFont = new Font(bfChinese, fontSize, fontStyle); //正常
         Chunk result = new Chunk();
         resultData = text;
-        if(parameter!=null && parameter.length()>0 && data.getString(parameter)!=null && data.getString(parameter).length()>0){
-            resultData = data.getString(parameter);
+        List<String> keyList = getKeyList(parameter);
+
+        if(parameter!=null && parameter.length()>0 && keyList.size() > 0){
+            for(String key : keyList){
+                parameter = parameter.replace("{"+key+"}",data.getString(key));
+            }
+            resultData = parameter;
         }
         result.append(resultData);
         result.setFont(textFont);
@@ -566,6 +574,35 @@ public class PrePdf {
                 break;
             default:
                 result = PageSize.A4;
+        }
+        return result;
+    }
+
+    /**
+     * @description 获取chunk的参数表达式提取map的key
+     * @author      刘鑫（1661）
+     * @return      java.util.List<java.lang.String>
+     * @Params      [input]
+     * @date        2019/10/30 21:27
+     */
+    public static java.util.List<String> getKeyList (String input ){
+        if(input== null || input.length()<1){
+            return null;
+        }
+        List<String> result = new ArrayList<>();
+        char[] inputCharArr = input.toCharArray();
+        int startIndex = 0;
+        int endIndex = 0;
+        boolean openFlag = false;
+        for(int x = 0; x<inputCharArr.length;x++){
+            if('{' == inputCharArr[x]){
+                startIndex = x;
+                openFlag = true;
+            }else if(openFlag && '}' == inputCharArr[x]){
+                endIndex = x;
+                openFlag = false;
+                result.add(input.substring(startIndex+1,endIndex));
+            }
         }
         return result;
     }
