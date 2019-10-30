@@ -3,10 +3,8 @@ package com.example.util.test;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.itextpdf.text.*;
-import com.itextpdf.text.pdf.BaseFont;
-import com.itextpdf.text.pdf.PdfPCell;
-import com.itextpdf.text.pdf.PdfPTable;
-import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.text.pdf.*;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ClassUtils;
 
@@ -323,6 +321,7 @@ public class PrePdf {
         JSONObject dataMap = new JSONObject();
         dataMap.put("param1","参数1");
         dataMap.put("param2","参数2");
+        dataMap.put("xxmc","某某学校");
         data = dataMap;
     }
 
@@ -435,7 +434,7 @@ public class PrePdf {
 
         if(parameter!=null && parameter.length()>0 && keyList.size() > 0){
             for(String key : keyList){
-                parameter = parameter.replace("{"+key+"}",data.getString(key));
+                parameter = parameter.replace("{"+key+"}", StringUtils.defaultIfEmpty(data.getString(key),""));
             }
             resultData = parameter;
         }
