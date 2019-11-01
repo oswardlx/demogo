@@ -7,16 +7,22 @@ import com.itextpdf.text.pdf.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.ResourceUtils;
 
 import java.io.*;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Service
 public class PrePdf {
 
     public static JSONObject data;
+
     public static void main(String[] args) throws Exception {
 //        createPDF();
         String testJson = "[{\"check_Focus\":false,\"pageSize\":\"A4\",\"marginRight\":\"16\",\"children\":[{\"check_Focus\":false,\"parentTId\":\"treeDemo_1\",\"children\":[{\"isFirstNode\":true,\"chkDisabled\":false,\"check_Focus\":false,\"parentTId\":\"treeDemo_2\",\"isParent\":true,\"isHover\":false,\"level\":2,\"isAjaxing\":false,\"checkedOld\":false,\"pId\":11,\"tId\":\"treeDemo_3\",\"ename\":\"Cell\",\"children\":[{\"isFirstNode\":true,\"chkDisabled\":false,\"check_Focus\":false,\"isParent\":true,\"parentTId\":\"treeDemo_3\",\"isHover\":false,\"level\":3,\"isAjaxing\":false,\"checkedOld\":false,\"pId\":111,\"tId\":\"treeDemo_4\",\"ename\":\"Paragraph\",\"children\":[{\"check_Focus\":false,\"fontBase\":\"\",\"parentTId\":\"treeDemo_4\",\"editNameFlag\":false,\"parameter\":\"{}\",\"checked\":false,\"id\":11111,\"zAsync\":true,\"text\":\"3333\",\"nocheck\":false,\"isFirstNode\":true,\"chkDisabled\":false,\"isParent\":false,\"isHover\":false,\"level\":4,\"isAjaxing\":false,\"checkedOld\":false,\"pId\":1111,\"fontStyle\":0,\"tId\":\"treeDemo_5\",\"ename\":\"Chunk\",\"name\":\"块\",\"isLastNode\":true,\"halfCheck\":false,\"check_Child_State\":-1,\"fontSize\":9,\"open\":false}],\"editNameFlag\":false,\"name\":\"段落\",\"checked\":false,\"isLastNode\":true,\"halfCheck\":false,\"check_Child_State\":0,\"id\":1111,\"zAsync\":true,\"nocheck\":false,\"open\":true}],\"editNameFlag\":false,\"name\":\"单元格\",\"checked\":false,\"isLastNode\":false,\"halfCheck\":false,\"check_Child_State\":0,\"id\":111,\"zAsync\":true,\"nocheck\":false,\"open\":true},{\"check_Focus\":false,\"parentTId\":\"treeDemo_2\",\"paddingRight\":16,\"cellHeight\":15,\"paddingBottom\":16,\"children\":[{\"isFirstNode\":true,\"chkDisabled\":false,\"check_Focus\":false,\"isParent\":true,\"parentTId\":\"treeDemo_6\",\"isHover\":false,\"level\":3,\"isAjaxing\":false,\"checkedOld\":false,\"pId\":112,\"tId\":\"treeDemo_8\",\"ename\":\"Paragraph\",\"children\":[{\"check_Focus\":false,\"fontBase\":\"\",\"parentTId\":\"treeDemo_8\",\"editNameFlag\":false,\"parameter\":\"{}\",\"checked\":false,\"id\":101,\"zAsync\":true,\"text\":\"ewwewr\",\"nocheck\":false,\"isFirstNode\":true,\"chkDisabled\":false,\"isParent\":false,\"isHover\":false,\"level\":4,\"isAjaxing\":false,\"checkedOld\":false,\"pId\":101,\"fontStyle\":0,\"tId\":\"treeDemo_9\",\"ename\":\"Chunk\",\"name\":\"块\",\"isLastNode\":true,\"halfCheck\":false,\"check_Child_State\":-1,\"fontSize\":9,\"open\":false}],\"editNameFlag\":false,\"name\":\"段落\",\"checked\":false,\"isLastNode\":true,\"halfCheck\":false,\"check_Child_State\":0,\"id\":101,\"zAsync\":false,\"nocheck\":false,\"open\":true}],\"editNameFlag\":false,\"checked\":false,\"id\":112,\"zAsync\":false,\"paddingTop\":16,\"nocheck\":false,\"isFirstNode\":false,\"chkDisabled\":false,\"rowSpan\":1,\"isParent\":true,\"isHover\":false,\"level\":2,\"isAjaxing\":false,\"colSpan\":1,\"checkedOld\":false,\"rotation\":0,\"pId\":11,\"tId\":\"treeDemo_6\",\"ename\":\"Cell\",\"horizontalAlignment\":\"0\",\"name\":\"单元格\",\"isLastNode\":true,\"halfCheck\":false,\"check_Child_State\":0,\"paddingLeft\":16,\"open\":true,\"verticalAlignment\":\"6\"}],\"editNameFlag\":false,\"checked\":false,\"id\":11,\"zAsync\":true,\"nocheck\":false,\"isFirstNode\":true,\"chkDisabled\":false,\"isParent\":true,\"isHover\":true,\"level\":1,\"isAjaxing\":false,\"checkedOld\":false,\"pId\":1,\"colsRadioArr\":[12,23],\"numCols\":2,\"tId\":\"treeDemo_2\",\"ename\":\"Table\",\"widthRadio\":100,\"name\":\"表格\",\"isLastNode\":true,\"halfCheck\":false,\"check_Child_State\":0,\"open\":true}],\"editNameFlag\":false,\"checked\":false,\"id\":1,\"zAsync\":true,\"nocheck\":false,\"isFirstNode\":true,\"chkDisabled\":false,\"isParent\":true,\"isHover\":false,\"level\":0,\"isAjaxing\":false,\"checkedOld\":false,\"colsRadioArr\":[],\"tId\":\"treeDemo_1\",\"marginLeft\":\"16\",\"ename\":\"Page\",\"pageRotate\":\"vertical\",\"name\":\"纸张与文档\",\"isLastNode\":true,\"halfCheck\":false,\"check_Child_State\":0,\"marginBottom\":\"16\",\"open\":true,\"marginTop\":\"16\"},{\"check_Focus\":false,\"parentTId\":\"treeDemo_1\",\"children\":[{\"isFirstNode\":true,\"chkDisabled\":false,\"check_Focus\":false,\"parentTId\":\"treeDemo_2\",\"isParent\":true,\"isHover\":false,\"level\":2,\"isAjaxing\":false,\"checkedOld\":false,\"pId\":11,\"tId\":\"treeDemo_3\",\"ename\":\"Cell\",\"children\":[{\"isFirstNode\":true,\"chkDisabled\":false,\"check_Focus\":false,\"isParent\":true,\"parentTId\":\"treeDemo_3\",\"isHover\":false,\"level\":3,\"isAjaxing\":false,\"checkedOld\":false,\"pId\":111,\"tId\":\"treeDemo_4\",\"ename\":\"Paragraph\",\"children\":[{\"check_Focus\":false,\"fontBase\":\"\",\"parentTId\":\"treeDemo_4\",\"editNameFlag\":false,\"parameter\":\"{}\",\"checked\":false,\"id\":11111,\"zAsync\":true,\"text\":\"3333\",\"nocheck\":false,\"isFirstNode\":true,\"chkDisabled\":false,\"isParent\":false,\"isHover\":false,\"level\":4,\"isAjaxing\":false,\"checkedOld\":false,\"pId\":1111,\"fontStyle\":0,\"tId\":\"treeDemo_5\",\"ename\":\"Chunk\",\"name\":\"块\",\"isLastNode\":true,\"halfCheck\":false,\"check_Child_State\":-1,\"fontSize\":9,\"open\":false}],\"editNameFlag\":false,\"name\":\"段落\",\"checked\":false,\"isLastNode\":true,\"halfCheck\":false,\"check_Child_State\":0,\"id\":1111,\"zAsync\":true,\"nocheck\":false,\"open\":true}],\"editNameFlag\":false,\"name\":\"单元格\",\"checked\":false,\"isLastNode\":false,\"halfCheck\":false,\"check_Child_State\":0,\"id\":111,\"zAsync\":true,\"nocheck\":false,\"open\":true},{\"check_Focus\":false,\"parentTId\":\"treeDemo_2\",\"paddingRight\":16,\"cellHeight\":15,\"paddingBottom\":16,\"children\":[{\"isFirstNode\":true,\"chkDisabled\":false,\"check_Focus\":false,\"isParent\":true,\"parentTId\":\"treeDemo_6\",\"isHover\":false,\"level\":3,\"isAjaxing\":false,\"checkedOld\":false,\"pId\":112,\"tId\":\"treeDemo_8\",\"ename\":\"Paragraph\",\"children\":[{\"check_Focus\":false,\"fontBase\":\"\",\"parentTId\":\"treeDemo_8\",\"editNameFlag\":false,\"parameter\":\"{}\",\"checked\":false,\"id\":101,\"zAsync\":true,\"text\":\"ewwewr\",\"nocheck\":false,\"isFirstNode\":true,\"chkDisabled\":false,\"isParent\":false,\"isHover\":false,\"level\":4,\"isAjaxing\":false,\"checkedOld\":false,\"pId\":101,\"fontStyle\":0,\"tId\":\"treeDemo_9\",\"ename\":\"Chunk\",\"name\":\"块\",\"isLastNode\":true,\"halfCheck\":false,\"check_Child_State\":-1,\"fontSize\":9,\"open\":false}],\"editNameFlag\":false,\"name\":\"段落\",\"checked\":false,\"isLastNode\":true,\"halfCheck\":false,\"check_Child_State\":0,\"id\":101,\"zAsync\":false,\"nocheck\":false,\"open\":true}],\"editNameFlag\":false,\"checked\":false,\"id\":112,\"zAsync\":false,\"paddingTop\":16,\"nocheck\":false,\"isFirstNode\":false,\"chkDisabled\":false,\"rowSpan\":1,\"isParent\":true,\"isHover\":false,\"level\":2,\"isAjaxing\":false,\"colSpan\":1,\"checkedOld\":false,\"rotation\":0,\"pId\":11,\"tId\":\"treeDemo_6\",\"ename\":\"Cell\",\"horizontalAlignment\":\"0\",\"name\":\"单元格\",\"isLastNode\":true,\"halfCheck\":false,\"check_Child_State\":0,\"paddingLeft\":16,\"open\":true,\"verticalAlignment\":\"6\"}],\"editNameFlag\":false,\"checked\":false,\"id\":11,\"zAsync\":true,\"nocheck\":false,\"isFirstNode\":true,\"chkDisabled\":false,\"isParent\":true,\"isHover\":true,\"level\":1,\"isAjaxing\":false,\"checkedOld\":false,\"pId\":1,\"colsRadioArr\":[12,23],\"numCols\":2,\"tId\":\"treeDemo_2\",\"ename\":\"Table\",\"widthRadio\":100,\"name\":\"表格\",\"isLastNode\":true,\"halfCheck\":false,\"check_Child_State\":0,\"open\":true},{\"isFirstNode\":true,\"chkDisabled\":false,\"check_Focus\":false,\"parentTId\":\"treeDemo_2\",\"isParent\":true,\"isHover\":false,\"level\":2,\"isAjaxing\":false,\"checkedOld\":false,\"pId\":11,\"tId\":\"treeDemo_3\",\"ename\":\"Cell\",\"children\":[{\"isFirstNode\":true,\"chkDisabled\":false,\"check_Focus\":false,\"isParent\":true,\"parentTId\":\"treeDemo_3\",\"isHover\":false,\"level\":3,\"isAjaxing\":false,\"checkedOld\":false,\"pId\":111,\"tId\":\"treeDemo_4\",\"ename\":\"Paragraph\",\"children\":[{\"check_Focus\":false,\"fontBase\":\"\",\"parentTId\":\"treeDemo_4\",\"editNameFlag\":false,\"parameter\":\"{}\",\"checked\":false,\"id\":11111,\"zAsync\":true,\"text\":\"3333\",\"nocheck\":false,\"isFirstNode\":true,\"chkDisabled\":false,\"isParent\":false,\"isHover\":false,\"level\":4,\"isAjaxing\":false,\"checkedOld\":false,\"pId\":1111,\"fontStyle\":0,\"tId\":\"treeDemo_5\",\"ename\":\"Chunk\",\"name\":\"块\",\"isLastNode\":true,\"halfCheck\":false,\"check_Child_State\":-1,\"fontSize\":9,\"open\":false}],\"editNameFlag\":false,\"name\":\"段落\",\"checked\":false,\"isLastNode\":true,\"halfCheck\":false,\"check_Child_State\":0,\"id\":1111,\"zAsync\":true,\"nocheck\":false,\"open\":true}],\"editNameFlag\":false,\"name\":\"单元格\",\"checked\":false,\"isLastNode\":false,\"halfCheck\":false,\"check_Child_State\":0,\"id\":111,\"zAsync\":true,\"nocheck\":false,\"open\":true},{\"isFirstNode\":true,\"chkDisabled\":false,\"check_Focus\":false,\"isParent\":true,\"parentTId\":\"treeDemo_3\",\"isHover\":false,\"level\":3,\"isAjaxing\":false,\"checkedOld\":false,\"pId\":111,\"tId\":\"treeDemo_4\",\"ename\":\"Paragraph\",\"children\":[{\"check_Focus\":false,\"fontBase\":\"\",\"parentTId\":\"treeDemo_4\",\"editNameFlag\":false,\"parameter\":\"{}\",\"checked\":false,\"id\":11111,\"zAsync\":true,\"text\":\"3333\",\"nocheck\":false,\"isFirstNode\":true,\"chkDisabled\":false,\"isParent\":false,\"isHover\":false,\"level\":4,\"isAjaxing\":false,\"checkedOld\":false,\"pId\":1111,\"fontStyle\":0,\"tId\":\"treeDemo_5\",\"ename\":\"Chunk\",\"name\":\"块\",\"isLastNode\":true,\"halfCheck\":false,\"check_Child_State\":-1,\"fontSize\":9,\"open\":false}],\"editNameFlag\":false,\"name\":\"段落\",\"checked\":false,\"isLastNode\":true,\"halfCheck\":false,\"check_Child_State\":0,\"id\":1111,\"zAsync\":true,\"nocheck\":false,\"open\":true},{\"check_Focus\":false,\"fontBase\":\"\",\"parentTId\":\"treeDemo_4\",\"editNameFlag\":false,\"parameter\":\"{}\",\"checked\":false,\"id\":11111,\"zAsync\":true,\"text\":\"3333\",\"nocheck\":false,\"isFirstNode\":true,\"chkDisabled\":false,\"isParent\":false,\"isHover\":false,\"level\":4,\"isAjaxing\":false,\"checkedOld\":false,\"pId\":1111,\"fontStyle\":0,\"tId\":\"treeDemo_5\",\"ename\":\"Chunk\",\"name\":\"块\",\"isLastNode\":true,\"halfCheck\":false,\"check_Child_State\":-1,\"fontSize\":9,\"open\":false},{\"check_Focus\":false,\"parentTId\":\"treeDemo_2\",\"paddingRight\":16,\"cellHeight\":15,\"paddingBottom\":16,\"children\":[{\"isFirstNode\":true,\"chkDisabled\":false,\"check_Focus\":false,\"isParent\":true,\"parentTId\":\"treeDemo_6\",\"isHover\":false,\"level\":3,\"isAjaxing\":false,\"checkedOld\":false,\"pId\":112,\"tId\":\"treeDemo_8\",\"ename\":\"Paragraph\",\"children\":[{\"check_Focus\":false,\"fontBase\":\"\",\"parentTId\":\"treeDemo_8\",\"editNameFlag\":false,\"parameter\":\"{}\",\"checked\":false,\"id\":101,\"zAsync\":true,\"text\":\"ewwewr\",\"nocheck\":false,\"isFirstNode\":true,\"chkDisabled\":false,\"isParent\":false,\"isHover\":false,\"level\":4,\"isAjaxing\":false,\"checkedOld\":false,\"pId\":101,\"fontStyle\":0,\"tId\":\"treeDemo_9\",\"ename\":\"Chunk\",\"name\":\"块\",\"isLastNode\":true,\"halfCheck\":false,\"check_Child_State\":-1,\"fontSize\":9,\"open\":false}],\"editNameFlag\":false,\"name\":\"段落\",\"checked\":false,\"isLastNode\":true,\"halfCheck\":false,\"check_Child_State\":0,\"id\":101,\"zAsync\":false,\"nocheck\":false,\"open\":true}],\"editNameFlag\":false,\"checked\":false,\"id\":112,\"zAsync\":false,\"paddingTop\":16,\"nocheck\":false,\"isFirstNode\":false,\"chkDisabled\":false,\"rowSpan\":1,\"isParent\":true,\"isHover\":false,\"level\":2,\"isAjaxing\":false,\"colSpan\":1,\"checkedOld\":false,\"rotation\":0,\"pId\":11,\"tId\":\"treeDemo_6\",\"ename\":\"Cell\",\"horizontalAlignment\":\"0\",\"name\":\"单元格\",\"isLastNode\":true,\"halfCheck\":false,\"check_Child_State\":0,\"paddingLeft\":16,\"open\":true,\"verticalAlignment\":\"6\"},{\"isFirstNode\":true,\"chkDisabled\":false,\"check_Focus\":false,\"isParent\":true,\"parentTId\":\"treeDemo_6\",\"isHover\":false,\"level\":3,\"isAjaxing\":false,\"checkedOld\":false,\"pId\":112,\"tId\":\"treeDemo_8\",\"ename\":\"Paragraph\",\"children\":[{\"check_Focus\":false,\"fontBase\":\"\",\"parentTId\":\"treeDemo_8\",\"editNameFlag\":false,\"parameter\":\"{}\",\"checked\":false,\"id\":101,\"zAsync\":true,\"text\":\"ewwewr\",\"nocheck\":false,\"isFirstNode\":true,\"chkDisabled\":false,\"isParent\":false,\"isHover\":false,\"level\":4,\"isAjaxing\":false,\"checkedOld\":false,\"pId\":101,\"fontStyle\":0,\"tId\":\"treeDemo_9\",\"ename\":\"Chunk\",\"name\":\"块\",\"isLastNode\":true,\"halfCheck\":false,\"check_Child_State\":-1,\"fontSize\":9,\"open\":false}],\"editNameFlag\":false,\"name\":\"段落\",\"checked\":false,\"isLastNode\":true,\"halfCheck\":false,\"check_Child_State\":0,\"id\":101,\"zAsync\":false,\"nocheck\":false,\"open\":true},{\"check_Focus\":false,\"fontBase\":\"\",\"parentTId\":\"treeDemo_8\",\"editNameFlag\":false,\"parameter\":\"{}\",\"checked\":false,\"id\":101,\"zAsync\":true,\"text\":\"ewwewr\",\"nocheck\":false,\"isFirstNode\":true,\"chkDisabled\":false,\"isParent\":false,\"isHover\":false,\"level\":4,\"isAjaxing\":false,\"checkedOld\":false,\"pId\":101,\"fontStyle\":0,\"tId\":\"treeDemo_9\",\"ename\":\"Chunk\",\"name\":\"块\",\"isLastNode\":true,\"halfCheck\":false,\"check_Child_State\":-1,\"fontSize\":9,\"open\":false}]";
@@ -94,7 +100,7 @@ public class PrePdf {
         table.setWidthPercentage(100);
 
         PdfPCell celltemp0;
-        Chunk chunk1 =new Chunk("第三方",textFont);
+        Chunk chunk1 = new Chunk("第三方", textFont);
 //        Paragraph paragraph = new Paragraph(56, "第三方", textFont);
         Paragraph paragraph = new Paragraph();
         paragraph.add(chunk1);
@@ -220,7 +226,7 @@ public class PrePdf {
         PdfWriter.getInstance(doc, outputStream);
         doc.open();
         doc.newPage();
-        PdfPTable pdfPTable = new PdfPTable(new float[]{3,7});
+        PdfPTable pdfPTable = new PdfPTable(new float[]{3, 7});
         pdfPTable.setWidthPercentage(100);
         pdfPTable.getDefaultCell().setBorder(PdfPCell.BOX);
 
@@ -237,7 +243,7 @@ public class PrePdf {
 //        cell1.setPaddingBottom(0);
 
         Paragraph paragraph1 = new Paragraph();
-        Chunk chunk1 = new Chunk("ahfff",textFont);
+        Chunk chunk1 = new Chunk("ahfff", textFont);
         paragraph1.add(chunk1);
         cell1.addElement(paragraph1);
 
@@ -255,7 +261,7 @@ public class PrePdf {
 //        cell2.setPaddingBottom(0);
 
         Paragraph paragraph2 = new Paragraph();
-        Chunk chunk2 = new Chunk("sdadsa",textFont);
+        Chunk chunk2 = new Chunk("sdadsa", textFont);
         paragraph2.add(chunk2);
         cell2.addElement(paragraph2);
 
@@ -273,8 +279,8 @@ public class PrePdf {
      * @params [outputStream, nodeJsonObj]
      * @date 2019-08-01 20:36
      */
-    public  String decompling( JSONObject nodeJsonObj) throws Exception {
-        String path = ClassUtils.getDefaultClassLoader().getResource("").getPath() ;
+    public String decompling(JSONObject nodeJsonObj) throws Exception {
+        String path = ClassUtils.getDefaultClassLoader().getResource("").getPath();
         String parentPath = "/static/templates";
 //        String path2 = request.getSession().getServletContext().getContextPath() + parentPath;
 //        String result = nodeJsonObj.toJSONString();
@@ -286,6 +292,13 @@ public class PrePdf {
         PdfWriter.getInstance(document, os);
         document.open();
         document.newPage();
+//        String gg = ResourceUtils.CLASSPATH_URL_PREFIX;
+//        InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream("font/Alibaba-PuHuiTi-Regular.otf");
+//
+//        byte[] st1 = new byte[stream.available()];
+//        stream.read(st1);
+//        BaseFont st = BaseFont.createFont("Alibaba-PuHuiTi.otf", BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED, BaseFont.NOT_CACHED,
+//                st1, st1);
 
         ArrayList<Element> elements = countChange(mainArr);
         for (Element element : elements) {
@@ -293,9 +306,9 @@ public class PrePdf {
         }
         document.close();
 
-        String timestamp = System.currentTimeMillis()+"";
-        String tempFilePath = "/gogo"+timestamp+".pdf";
-        File pdfFile = new File(path + parentPath+tempFilePath);
+        String timestamp = System.currentTimeMillis() + "";
+        String tempFilePath = "/gogo" + timestamp + ".pdf";
+        File pdfFile = new File(path + parentPath + tempFilePath);
         if (pdfFile.exists()) {
             pdfFile.delete();
         }
@@ -306,31 +319,51 @@ public class PrePdf {
         }
         fileOs.close();
         os.close();
-        return parentPath+tempFilePath;
+        executorDeleteFile(path + parentPath + tempFilePath, 10, 2000);
+        return parentPath + tempFilePath;
 
     }
 
     /**
+     * @return void
      * @description 初始化参数
-     * @author      刘鑫（1661）
-     * @return      void
-     * @Params      []
-     * @date        2019/10/29 21:46
+     * @author 刘鑫（1661）
+     * @Params []
+     * @date 2019/10/29 21:46
      */
-    public static void initData(){
+    public static void initData() {
         JSONObject dataMap = new JSONObject();
-        dataMap.put("param1","参数1");
-        dataMap.put("param2","参数2");
-        dataMap.put("xxmc","某某学校");
+        dataMap.put("param1", "参数1");
+        dataMap.put("param2", "参数2");
+        dataMap.put("xxmc", "正方软件");
+        dataMap.put("xy", "党委办公室");
+        dataMap.put("zy", "给排水工程");
+        dataMap.put("bjmc", "给排水1201");
+        dataMap.put("xh", "1213300103");
+        dataMap.put("xm", "王婷婷");
+        dataMap.put("xw", "理学");
+        dataMap.put("byzsh", "12345678910");
+        dataMap.put("byjl", "结业");
+        dataMap.put("bylwtm", "基于测试分析报告的设计方案与维护论文题目a");
+        dataMap.put("byyqdzxf", "130");
+        dataMap.put("yhdzxf", "126.0");
+        dataMap.put("bxkxf", "83.0");
+        dataMap.put("xxkxf", "29.0");
+        dataMap.put("gxkxf", "13.0");
+        dataMap.put("cskxf", "0.0");
+        dataMap.put("sjkxf", "1.0");
+        SimpleDateFormat sf = new SimpleDateFormat("YYYY-MM-dd");
+        String dyrq = sf.format(new Date());
+        dataMap.put("dyrq", dyrq);
         data = dataMap;
     }
 
     /**
+     * @return java.util.ArrayList<com.itextpdf.text.Element>
      * @description 开始解析
-     * @author      刘鑫（1661）
-     * @return      java.util.ArrayList<com.itextpdf.text.Element>
-     * @Params      [mainArr]
-     * @date        2019/10/22 22:03
+     * @author 刘鑫（1661）
+     * @Params [mainArr]
+     * @date 2019/10/22 22:03
      */
     public ArrayList<Element> countChange(JSONArray mainArr) throws IOException, DocumentException {
         initData();
@@ -424,17 +457,19 @@ public class PrePdf {
         int fontSize = jsonObject.getIntValue("fontSize");
         int fontStyle = jsonObject.getIntValue("fontStyle");
         fontSize = fontSize == 0 ? 9 : fontSize;
-        //添加中文字体
-        BaseFont bfChinese = BaseFont.createFont("STSong-Light", "UniGB-UCS2-H", BaseFont.NOT_EMBEDDED);
+        //添加字体
+//        BaseFont bfChinese = BaseFont.createFont("STSong-Light", "UniGB-UCS2-H", BaseFont.NOT_EMBEDDED);
+        fontBase = StringUtils.defaultIfEmpty(fontBase, "Alibaba-PuHuiTi-Regular.otf");
+        BaseFont bfChinese = getLocalFont(fontBase);
         //设置字体样式
         Font textFont = new Font(bfChinese, fontSize, fontStyle); //正常
         Chunk result = new Chunk();
         resultData = text;
         List<String> keyList = getKeyList(parameter);
 
-        if(parameter!=null && parameter.length()>0 && keyList.size() > 0){
-            for(String key : keyList){
-                parameter = parameter.replace("{"+key+"}", StringUtils.defaultIfEmpty(data.getString(key),""));
+        if (parameter != null && parameter.length() > 2 && keyList.size() > 0) {
+            for (String key : keyList) {
+                parameter = parameter.replace("{" + key + "}", StringUtils.defaultIfEmpty(data.getString(key), ""));
             }
             resultData = parameter;
         }
@@ -472,6 +507,7 @@ public class PrePdf {
      */
     public PdfPTable initTable(JSONObject jsonObject) throws IOException, DocumentException {
         int numCols = jsonObject.getIntValue("numCols");
+        int widthRadio = jsonObject.getIntValue("widthRadio");
         float[] colsArr = new float[numCols];
         JSONArray colsRadioArr = jsonObject.getJSONArray("colsRadioArr");
         int colsRadioArrSize = colsRadioArr.size();
@@ -479,6 +515,7 @@ public class PrePdf {
             colsArr[x] = colsRadioArr.getFloatValue(x);
         }
         PdfPTable result = new PdfPTable(colsArr);
+        result.setWidthPercentage(widthRadio);
         ArrayList<Element> elements = parseChildren(jsonObject.getJSONArray("children"));
         for (Element element : elements) {
 //            result.addCell(element);
@@ -560,8 +597,9 @@ public class PrePdf {
         if ("horizontal".equals(pageRotate)) {
             rectangle = rectangle.rotate();
         }
-        document = new Document(rectangle);
-        document.setMargins(marginLeft, marginRight, marginTop, marginBottom);
+
+        document = new Document(rectangle,marginLeft, marginRight, marginTop, marginBottom);
+//        document.setMargins(marginLeft, marginRight, marginTop, marginBottom);
         return document;
     }
 
@@ -578,14 +616,14 @@ public class PrePdf {
     }
 
     /**
+     * @return java.util.List<java.lang.String>
      * @description 获取chunk的参数表达式提取map的key
-     * @author      刘鑫（1661）
-     * @return      java.util.List<java.lang.String>
-     * @Params      [input]
-     * @date        2019/10/30 21:27
+     * @author 刘鑫（1661）
+     * @Params [input]
+     * @date 2019/10/30 21:27
      */
-    public static java.util.List<String> getKeyList (String input ){
-        if(input== null || input.length()<1){
+    public static java.util.List<String> getKeyList(String input) {
+        if (input == null || input.length() < 1) {
             return null;
         }
         List<String> result = new ArrayList<>();
@@ -593,17 +631,92 @@ public class PrePdf {
         int startIndex = 0;
         int endIndex = 0;
         boolean openFlag = false;
-        for(int x = 0; x<inputCharArr.length;x++){
-            if('{' == inputCharArr[x]){
+        for (int x = 0; x < inputCharArr.length; x++) {
+            if ('{' == inputCharArr[x]) {
                 startIndex = x;
                 openFlag = true;
-            }else if(openFlag && '}' == inputCharArr[x]){
+            } else if (openFlag && '}' == inputCharArr[x]) {
                 endIndex = x;
                 openFlag = false;
-                result.add(input.substring(startIndex+1,endIndex));
+                result.add(input.substring(startIndex + 1, endIndex));
             }
         }
         return result;
     }
 
+    /**
+     * @return void
+     * @description 异步定时多次删除文件
+     * @author 刘鑫（1661）
+     * @Params [filePath, Times, millies]
+     * @date 2019/9/20 15:53
+     */
+    public void executorDeleteFile(String filePath, int Times, long millies) {
+        ExecutorService executor = Executors.newCachedThreadPool();
+        try {
+            String finalPath = filePath;
+            executor.submit(new Runnable() {
+                public void run() {
+                    try {
+                        for (int i = 0; i < Times; i++) {
+                            Thread.sleep(millies);
+                            if (deleteFile(finalPath)) {
+                                break;
+                            }
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        throw new RuntimeException("删除文件线程出错！");
+                    }
+                }
+            });
+            executor.shutdown();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("删除文件失败！！");
+        }
+    }
+
+    /**
+     * @return boolean
+     * @description 删除文件
+     * @author 刘鑫（1661）
+     * @Params [filename, filepath]
+     * @date 2019/9/20 13:53
+     */
+    public boolean deleteFile(String filepath) {
+        File file = new File(filepath);
+        if (file.exists() && file.isFile()) {
+            if (file.delete()) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            file.delete();
+            return true;
+        }
+    }
+
+    /**
+     * @return com.itextpdf.text.pdf.BaseFont
+     * @description 获取字体
+     * @author 刘鑫（1661）
+     * @Params [fontName]
+     * @date 2019/10/31 21:12
+     */
+    public BaseFont getLocalFont(String fontName) throws IOException, DocumentException {
+        BaseFont result = null;
+        InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream("font/" + fontName);
+        if (stream == null) {
+            stream = Thread.currentThread().getContextClassLoader().getResourceAsStream("font/Alibaba-PuHuiTi-Regular.otf");
+        }
+        assert stream != null;
+        byte[] st1 = new byte[stream.available()];
+        stream.read(st1);
+        result = BaseFont.createFont(fontName, BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED, BaseFont.NOT_CACHED,
+                st1, st1);
+        return result;
+
+    }
 }
