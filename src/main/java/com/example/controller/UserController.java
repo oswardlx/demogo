@@ -48,10 +48,12 @@ public class UserController {
     @CrossOrigin
     @RequestMapping(value = "/export/pdf2",method = RequestMethod.POST)
     public String exportPdf2(HttpServletRequest request,HttpServletResponse response, @RequestParam String nodeInfo) throws Exception {
+        long startTime = System.currentTimeMillis();
         OutputStream outputStream = response.getOutputStream();
-
         JSONObject obj = JSON.parseObject(nodeInfo);
         String result = prePdf.decompling(obj);
+        long endTime = System.currentTimeMillis();
+        System.out.println("total cost: "+(endTime-startTime)+" (ms)");
         return result;
     }
 

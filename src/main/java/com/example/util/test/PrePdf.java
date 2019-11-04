@@ -11,9 +11,7 @@ import org.springframework.util.ResourceUtils;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
+import java.util.*;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -280,6 +278,7 @@ public class PrePdf {
      * @date 2019-08-01 20:36
      */
     public String decompling(JSONObject nodeJsonObj) throws Exception {
+        long startTime = System.currentTimeMillis();
         String path = ClassUtils.getDefaultClassLoader().getResource("").getPath();
         String parentPath = "/static/templates";
 //        String path2 = request.getSession().getServletContext().getContextPath() + parentPath;
@@ -292,19 +291,15 @@ public class PrePdf {
         PdfWriter.getInstance(document, os);
         document.open();
         document.newPage();
-//        String gg = ResourceUtils.CLASSPATH_URL_PREFIX;
-//        InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream("font/Alibaba-PuHuiTi-Regular.otf");
-//
-//        byte[] st1 = new byte[stream.available()];
-//        stream.read(st1);
-//        BaseFont st = BaseFont.createFont("Alibaba-PuHuiTi.otf", BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED, BaseFont.NOT_CACHED,
-//                st1, st1);
-
+        long endTime = System.currentTimeMillis();
+        System.out.println("\ngetPath cost: "+Math.abs(endTime-startTime)+" (ms)");
         ArrayList<Element> elements = countChange(mainArr);
         for (Element element : elements) {
             document.add(element);
         }
         document.close();
+        startTime = System.currentTimeMillis();
+        System.out.println("countChange cost: "+Math.abs(endTime-startTime)+" (ms)");
 
         String timestamp = System.currentTimeMillis() + "";
         String tempFilePath = "/gogo" + timestamp + ".pdf";
@@ -314,14 +309,23 @@ public class PrePdf {
         }
         byte bWrite[] = os.toByteArray();
         OutputStream fileOs = new FileOutputStream(pdfFile);
-        for (int x = 0; x < bWrite.length; x++) {
-            fileOs.write(bWrite[x]); // writes the bytes
+        int size = 1024 * 100;
+        byte[] temp = null;
+        for (int x = 0; x < bWrite.length; x += size) {
+            if (x + size > bWrite.length) {
+                temp = Arrays.copyOfRange(bWrite, x, bWrite.length);
+                fileOs.write(temp);
+                break;
+            }
+            temp = Arrays.copyOfRange(bWrite, x, x + size);
+            fileOs.write(temp);
         }
         fileOs.close();
         os.close();
+        endTime = System.currentTimeMillis();
+        System.out.println("write cost: "+Math.abs(endTime-startTime)+" (ms)");
         executorDeleteFile(path + parentPath + tempFilePath, 10, 2000);
         return parentPath + tempFilePath;
-
     }
 
     /**
@@ -382,7 +386,6 @@ public class PrePdf {
      * @date 2019-08-01 20:28
      */
     public ArrayList<Element> parseChildren(JSONArray jsonArray) throws IOException, DocumentException {
-
         ArrayList<Element> elements = new ArrayList<>();
         Element element;
         Iterator iterator = jsonArray.iterator();
