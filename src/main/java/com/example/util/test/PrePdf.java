@@ -46,6 +46,7 @@ public class PrePdf {
 //        rect.getLeft()
         //创建文档实例
         Document doc = new Document(rect);
+//        doc.set
         doc.setMargins(12, 12, 50, 12);
 
         //添加中文字体
@@ -56,7 +57,8 @@ public class PrePdf {
 
 
         //创建输出流
-        PdfWriter.getInstance(doc, outputStream);
+        PdfWriter writer = PdfWriter.getInstance(doc, outputStream);
+        writer.setEncryption("Hello".getBytes(),"World".getBytes(),PdfWriter.ALLOW_SCREENREADERS,PdfWriter.STANDARD_ENCRYPTION_128);
 
         doc.open();
 //        doc.newPage();
@@ -556,10 +558,14 @@ public class PrePdf {
         float borderWidthRight = jsonObject.getFloatValue("borderWidthRight");
         float borderWidthTop = jsonObject.getFloatValue("borderWidthTop");
         float borderWidthBottom = jsonObject.getFloatValue("borderWidthBottom");
-        JSONArray paragraphJsonObjArr = jsonObject.getJSONArray("children");
-        JSONObject pgphJsonObj = paragraphJsonObjArr.getJSONObject(0);
-        Paragraph paragraph = initParagraph(pgphJsonObj);
-        PdfPCell pdfPCell = new PdfPCell(paragraph);
+        JSONArray childrenObjArr = jsonObject.getJSONArray("children");
+        JSONObject childrenObj = childrenObjArr.getJSONObject(0);
+        Element childrenElement = initElement(childrenObj);
+//        Paragraph paragraph = initParagraph(childrenObj);
+//        PdfPCell pdfPCell = new PdfPCell(paragraph);
+        PdfPCell pdfPCell = null;
+
+        pdfPCell = getPCell(childrenElement);
         pdfPCell.setColspan(colSpan);
         pdfPCell.setRowspan(rowSpan);
         pdfPCell.setRotation(rotation);
@@ -579,7 +585,27 @@ public class PrePdf {
 //        pdfPCell.addElement(elements.get(0));
         return pdfPCell;
     }
-
+    /**
+     * @description 根据不同类型的元素返回单元格对象，是因为如果用
+     *              com.itextpdf.text.pdf.PdfPCell#addElement(com.itextpdf.text.Element)这个方法，添加段落元素时单元格左右居中不起作用。
+     * @author      刘鑫（1661）
+     * @return      com.itextpdf.text.pdf.PdfPCell
+     * @Params      [element]
+     * @date        2019/11/8 21:14
+     */
+    public PdfPCell getPCell(Element element){
+        PdfPCell result = null;
+        if(element instanceof PdfPTable){
+            result = new PdfPCell((PdfPTable) element);
+        }else if(element instanceof PdfPCell){
+            result = new PdfPCell((PdfPCell) element);
+        }else if(element instanceof Paragraph){
+            result = new PdfPCell((Paragraph) element);
+        }else if(element instanceof Image){
+            result = new PdfPCell((Image) element);
+        }
+        return result;
+    }
     /**
      * @return com.itextpdf.text.Document
      * @throws
