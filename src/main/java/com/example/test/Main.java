@@ -1,15 +1,20 @@
 package com.example.test;
 
 import com.example.entity.Man;
+import com.example.util.UserAgentUtil;
 import com.sun.corba.se.spi.ior.IdentifiableBase;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
+import org.jsoup.Connection;
+import org.jsoup.Jsoup;
 
 import javax.swing.*;
+import java.io.IOException;
 import java.util.*;
 import java.util.regex.Pattern;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 //        Man man = null;
 //        System.out.println(test2(man.getAge()));
 //        System.out.println(isBlank2(null));
@@ -35,30 +40,36 @@ public class Main {
 //        System.out.println(isInteger(gg));
 //        File loala
 //        1,2,3,4,2,6
-        int[] arr1 = new int[]{1,1,2,3,1,4,3};
-        int[] arr2 = new int[]{1,2,1,2};
-
-//        7+   arr1.sum
-
-
-        int index  = 0 ;
-        int lastIndex = 0;
-        int sum;
-        List<Integer> i = new ArrayList<>();
-        for(int x : arr1){
-            sum = 0;
-            for(;index<lastIndex+x;index++){
-                sum += arr2[index%arr2.length];
-            }
-            lastIndex = index;
-            i.add(sum);
-        }
-
-        for(Integer  it : i){
-            System.out.println(it);
-        }
-
-
+//        int[] arr1 = new int[]{1,1,2,3,1,4,3};
+//        int[] arr2 = new int[]{1,2,1,2};
+//
+////        7+   arr1.sum
+//
+//
+//        int index  = 0 ;
+//        int lastIndex = 0;
+//        int sum;
+//        List<Integer> i = new ArrayList<>();
+//        for(int x : arr1){
+//            sum = 0;
+//            for(;index<lastIndex+x;index++){
+//                sum += arr2[index%arr2.length];
+//            }
+//            lastIndex = index;
+//            i.add(sum);
+//        }
+//
+//        for(Integer  it : i){
+//            System.out.println(it);
+//        }
+        Scanner scan = new Scanner(System.in);
+        String gg = scan.nextLine();
+        gg = gg.replace("\\n","\n");
+        System.out.println(gg);
+//        String weatherUrl = "http://localhost:8089/testBoot/";
+////        String userAgent = UserAgentUtil.getUserAgents();
+//        Connection.Response hh= Jsoup.connect(weatherUrl).execute();
+//        System.out.println(hh.body());
     }
     public static boolean isInteger(String str) {
         Pattern pattern = Pattern.compile("^[\\-|\\+]?\\d+(\\.\\d+)?$");

@@ -363,6 +363,29 @@ public class PrePdf {
         dataMap.put("dyrq", dyrq);
         data = dataMap;
     }
+    public static JSONObject initArray() {
+        JSONObject dataJO = new JSONObject();
+        JSONArray dataJA = new JSONArray();
+        JSONObject dataTemp;
+        for (int x = 0; x < 100; x++){
+            if(x%7 == 0){
+//                dataTemp.put("","");
+            }else {
+                dataTemp = new JSONObject();
+                dataTemp.put("kcmc", "课程名称" + x);
+                dataTemp.put("kcmcVSpan", "课程名称" + x);
+                dataTemp.put("kcmcHSpan", "课程名称" + x);
+                dataTemp.put("kcxz", "课程性质" + x);
+                dataTemp.put("xf", "学分" + x);
+                dataTemp.put("cj", "成绩" + x);
+                dataTemp.put("bk", "补考" + x);
+                dataTemp.put("cx", "重修" + x);
+                dataJA.add(dataTemp);
+            }
+        }
+        dataJO.put("cjJA",dataJA);
+        return dataJO;
+    }
 
     /**
      * @return java.util.ArrayList<com.itextpdf.text.Element>
@@ -478,13 +501,24 @@ public class PrePdf {
             }
             resultData = parameter;
         }
+        resultData = escapeStr(resultData);
         result.append(resultData);
         result.setFont(textFont);
         return result;
 
 
     }
-
+    /**
+     * @description 转义
+     * @author      刘鑫（1661）
+     * @return      java.lang.String
+     * @Params      [str]
+     * @date        2019/11/9 15:25
+     */
+    public String escapeStr(String str){
+        String result = str.replace("\\n","\n");
+        return  result;
+    }
     /**
      * @return com.itextpdf.text.Paragraph
      * @throws
@@ -530,6 +564,7 @@ public class PrePdf {
                 result.addCell((PdfPTable) element);
             }
         }
+        result.setSpacingBefore(0);
         result.getDefaultCell().setBorder(PdfPCell.BOX);
         result.completeRow();
         return result;
@@ -569,7 +604,9 @@ public class PrePdf {
         pdfPCell.setColspan(colSpan);
         pdfPCell.setRowspan(rowSpan);
         pdfPCell.setRotation(rotation);
-        pdfPCell.setFixedHeight(cellHeight);
+        if(cellHeight > 0){
+            pdfPCell.setFixedHeight(cellHeight);
+        }
         pdfPCell.setPaddingLeft(paddingLeft);
         pdfPCell.setPaddingRight(paddingRight);
         pdfPCell.setPaddingTop(paddingTop);
