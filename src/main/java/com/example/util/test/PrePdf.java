@@ -2,9 +2,11 @@ package com.example.util.test;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.*;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.boot.jackson.JsonObjectDeserializer;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ResourceUtils;
@@ -20,6 +22,7 @@ import java.util.concurrent.Executors;
 public class PrePdf {
 
     public static JSONObject data;
+    public static JSONObject properties;
 
     public static void main(String[] args) throws Exception {
 //        createPDF();
@@ -58,7 +61,7 @@ public class PrePdf {
 
         //创建输出流
         PdfWriter writer = PdfWriter.getInstance(doc, outputStream);
-        writer.setEncryption("Hello".getBytes(),"World".getBytes(),PdfWriter.ALLOW_SCREENREADERS,PdfWriter.STANDARD_ENCRYPTION_128);
+        writer.setEncryption("Hello".getBytes(), "World".getBytes(), PdfWriter.ALLOW_SCREENREADERS, PdfWriter.STANDARD_ENCRYPTION_128);
 
         doc.open();
 //        doc.newPage();
@@ -271,6 +274,55 @@ public class PrePdf {
         doc.close();
     }
 
+
+    /**
+     * @return com.alibaba.fastjson.JSONObject
+     * @description 后台模拟循环体参数
+     * @author 刘鑫（1661）
+     * @Params []
+     * @date 2019/11/13 22:53
+     */
+    public JSONObject getLoopProperties() {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("repeat", 3);
+        jsonObject.put("rows", 24);
+        jsonObject.put("resultWidthRadio", 100f);
+        jsonObject.put("hasHead", true);
+        jsonObject.put("cols", 6);
+        jsonObject.put("head1", "课   程\n名  称");
+        jsonObject.put("head2", "课程\n性质");
+        jsonObject.put("head3", "学\n分");
+        jsonObject.put("head4", "成\n绩");
+        jsonObject.put("head5", "补\n考");
+        jsonObject.put("head6", "重\n修");
+        jsonObject.put("vAlign1", PdfPCell.ALIGN_MIDDLE);
+        jsonObject.put("vAlign2", PdfPCell.ALIGN_MIDDLE);
+        jsonObject.put("vAlign3", PdfPCell.ALIGN_MIDDLE);
+        jsonObject.put("vAlign4", PdfPCell.ALIGN_MIDDLE);
+        jsonObject.put("vAlign5", PdfPCell.ALIGN_MIDDLE);
+        jsonObject.put("vAlign6", PdfPCell.ALIGN_MIDDLE);
+        jsonObject.put("hAlign1", PdfPCell.ALIGN_LEFT);
+        jsonObject.put("hAlign2", PdfPCell.ALIGN_CENTER);
+        jsonObject.put("hAlign3", PdfPCell.ALIGN_CENTER);
+        jsonObject.put("hAlign4", PdfPCell.ALIGN_CENTER);
+        jsonObject.put("hAlign5", PdfPCell.ALIGN_CENTER);
+        jsonObject.put("hAlign6", PdfPCell.ALIGN_CENTER);
+        JSONArray colsRadioArr = new JSONArray();
+        colsRadioArr.add(65);
+        colsRadioArr.add(20);
+        colsRadioArr.add(10);
+        colsRadioArr.add(10);
+        colsRadioArr.add(10);
+        colsRadioArr.add(10);
+//        JSONArray colProperties = new JSONArray();
+//        JSONObject col1 = new JSONObject();
+//        col1.put("")
+        jsonObject.put("colsRadioArr", colsRadioArr);
+        jsonObject.put("repeatWidthRadio", 100f);
+        return jsonObject;
+    }
+
+
     /**
      * @return java.lang.String
      * @throws
@@ -280,29 +332,33 @@ public class PrePdf {
      * @date 2019-08-01 20:36
      */
     public String decompling(JSONObject nodeJsonObj) throws Exception {
+        initData();
         long startTime = System.currentTimeMillis();
         String path = ClassUtils.getDefaultClassLoader().getResource("").getPath();
         String parentPath = "/static/templates";
-//        String path2 = request.getSession().getServletContext().getContextPath() + parentPath;
-//        String result = nodeJsonObj.toJSONString();
-//        System.out.println(result);
+        //初始化document
         JSONObject docJson = nodeJsonObj;
         JSONArray mainArr = docJson.getJSONArray("children");
         Document document = initDocument(docJson);
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         PdfWriter.getInstance(document, os);
         document.open();
-        document.newPage();
         long endTime = System.currentTimeMillis();
-        System.out.println("\ngetPath cost: "+Math.abs(endTime-startTime)+" (ms)");
-        ArrayList<Element> elements = countChange(mainArr);
-        for (Element element : elements) {
-            document.add(element);
+        System.out.println("\ngetPath cost: " + Math.abs(endTime - startTime) + " (ms)");
+        int cjJAMount = data.getJSONArray("cjJA").size();
+        int pageCount = cjJAMount / (properties.getIntValue("rows") * properties.getIntValue("repeat"));
+        int pageResidue = cjJAMount % (properties.getIntValue("rows") * properties.getIntValue("repeat"));
+        int pageNum = pageResidue > 0 ? pageCount + 1 : (pageCount > 0 ? pageCount : 1);
+        for (int x = 0; x < pageNum; x++) {
+            document.newPage();
+            ArrayList<Element> elements = countChange(mainArr);
+            for (Element element : elements) {
+                document.add(element);
+            }
         }
         document.close();
         startTime = System.currentTimeMillis();
-        System.out.println("countChange cost: "+Math.abs(endTime-startTime)+" (ms)");
-
+        System.out.println("countChange cost: " + Math.abs(endTime - startTime) + " (ms)");
         String timestamp = System.currentTimeMillis() + "";
         String tempFilePath = "/gogo" + timestamp + ".pdf";
         File pdfFile = new File(path + parentPath + tempFilePath);
@@ -325,7 +381,7 @@ public class PrePdf {
         fileOs.close();
         os.close();
         endTime = System.currentTimeMillis();
-        System.out.println("write cost: "+Math.abs(endTime-startTime)+" (ms)");
+        System.out.println("write cost: " + Math.abs(endTime - startTime) + " (ms)");
         executorDeleteFile(path + parentPath + tempFilePath, 10, 2000);
         return parentPath + tempFilePath;
     }
@@ -337,7 +393,7 @@ public class PrePdf {
      * @Params []
      * @date 2019/10/29 21:46
      */
-    public static void initData() {
+    public void initData() {
         JSONObject dataMap = new JSONObject();
         dataMap.put("param1", "参数1");
         dataMap.put("param2", "参数2");
@@ -361,30 +417,60 @@ public class PrePdf {
         SimpleDateFormat sf = new SimpleDateFormat("YYYY-MM-dd");
         String dyrq = sf.format(new Date());
         dataMap.put("dyrq", dyrq);
+        JSONArray cjJA = initArray();
+        dataMap.put("cjJA", cjJA);
         data = dataMap;
+        properties = getLoopProperties();
     }
-    public static JSONObject initArray() {
-        JSONObject dataJO = new JSONObject();
+
+    public JSONArray initArray() {
         JSONArray dataJA = new JSONArray();
         JSONObject dataTemp;
-        for (int x = 0; x < 100; x++){
-            if(x%7 == 0){
-//                dataTemp.put("","");
-            }else {
+        for (int x = 0; x < 100; x++) {
+            if (x % 7 == 0) {
+                dataTemp = new JSONObject();
+                dataTemp.put("xnxq", "2012-2013学年 第1学期");
+                dataTemp.put("xnxqVSpan", 6);
+                dataTemp.put("xnxqHSpan", 1);
+                dataTemp.put("xnxqHAilgn", PdfPCell.ALIGN_CENTER);
+                dataTemp.put("xnxqVAilgn", PdfPCell.ALIGN_MIDDLE);
+                dataJA.add(dataTemp);
+            } else {
                 dataTemp = new JSONObject();
                 dataTemp.put("kcmc", "课程名称" + x);
-                dataTemp.put("kcmcVSpan", "课程名称" + x);
-                dataTemp.put("kcmcHSpan", "课程名称" + x);
+                dataTemp.put("kcmcVSpan", 1);
+                dataTemp.put("kcmcHSpan", 1);
+                dataTemp.put("kcmcHAilgn", PdfPCell.ALIGN_LEFT);
+                dataTemp.put("kcmcVAilgn", PdfPCell.ALIGN_MIDDLE);
                 dataTemp.put("kcxz", "课程性质" + x);
+                dataTemp.put("kcxzVSpan", 1);
+                dataTemp.put("kcxzHSpan", 1);
+                dataTemp.put("kcxzHAilgn", PdfPCell.ALIGN_CENTER);
+                dataTemp.put("kcxzVAilgn", PdfPCell.ALIGN_MIDDLE);
                 dataTemp.put("xf", "学分" + x);
+                dataTemp.put("xfVSpan", 1);
+                dataTemp.put("xfHSpan", 1);
+                dataTemp.put("xfHAilgn", PdfPCell.ALIGN_CENTER);
+                dataTemp.put("xfVAilgn", PdfPCell.ALIGN_MIDDLE);
                 dataTemp.put("cj", "成绩" + x);
+                dataTemp.put("cjVSpan", 1);
+                dataTemp.put("cjHSpan", 1);
+                dataTemp.put("cjHAilgn", PdfPCell.ALIGN_CENTER);
+                dataTemp.put("cjVAilgn", PdfPCell.ALIGN_MIDDLE);
                 dataTemp.put("bk", "补考" + x);
+                dataTemp.put("bkVSpan", 1);
+                dataTemp.put("bkHSpan", 1);
+                dataTemp.put("bkHAilgn", PdfPCell.ALIGN_CENTER);
+                dataTemp.put("bkVAilgn", PdfPCell.ALIGN_MIDDLE);
                 dataTemp.put("cx", "重修" + x);
+                dataTemp.put("cxVSpan", 1);
+                dataTemp.put("cxHSpan", 1);
+                dataTemp.put("cxHAilgn", PdfPCell.ALIGN_CENTER);
+                dataTemp.put("cxVAilgn", PdfPCell.ALIGN_MIDDLE);
                 dataJA.add(dataTemp);
             }
         }
-        dataJO.put("cjJA",dataJA);
-        return dataJO;
+        return dataJA;
     }
 
     /**
@@ -395,7 +481,7 @@ public class PrePdf {
      * @date 2019/10/22 22:03
      */
     public ArrayList<Element> countChange(JSONArray mainArr) throws IOException, DocumentException {
-        initData();
+
         ArrayList<Element> docElements;
         docElements = parseChildren(mainArr);
         return docElements;
@@ -461,11 +547,74 @@ public class PrePdf {
             case "Chunk":
                 result = initChunk(jsonObject);
                 break;
+            case "Loop":
+                result = initLoop();
             default:
                 result = null;
 
         }
         return result;
+    }
+
+    /**
+     * @return com.itextpdf.text.pdf.PdfPTable
+     * @description 初始化循环体
+     * @author 刘鑫（1661）
+     * @Params [jsonObject]
+     * @date 2019/11/13 19:49
+     */
+    public PdfPTable initLoop() throws IOException, DocumentException {
+        JSONObject loopPorperties = getLoopProperties();
+        JSONArray loopData = initArray();
+        int repeat = loopPorperties.getIntValue("repeat");
+        PdfPTable tempTable;
+        //构造分列Table参数
+        JSONArray colsRadioArr = loopPorperties.getJSONArray("colsRadioArr");
+        int cols = loopPorperties.getIntValue("cols");
+        float repeatWidthRadio = loopPorperties.getFloatValue("repeatWidthRadio");
+        float[] colsArr = new float[cols];
+        int colsRadioArrSize = colsRadioArr.size();
+        for (int x = 0; x < colsRadioArrSize; x++) {
+            colsArr[x] = colsRadioArr.getFloatValue(x);
+        }
+        PdfPTable[] colTables = new PdfPTable[repeat];
+        //构造结果Table
+        float resultWidthRadio = loopPorperties.getFloatValue("resultWidthRadio");
+        float[] resultArr = new float[repeat];
+        PdfPTable result = new PdfPTable(resultArr);
+        result.setWidthPercentage(resultWidthRadio);
+        for (int x = 0; x < repeat; x++) {
+            resultArr[x] = 1;
+            //初始化分列Table
+            tempTable = new PdfPTable(colsArr);
+            tempTable.setWidthPercentage(repeatWidthRadio);
+            colTables[x] = tempTable;
+        }
+        //todo 将数据写入
+
+
+        //todo 将分列table合入结果Talbe
+        for (int x = 0; x < colTables.length; x++) {
+            result.addCell(new PdfPCell(colTables[x]));
+        }
+        result.setSpacingBefore(0);
+        result.getDefaultCell().setBorder(PdfPCell.BOX);
+        result.completeRow();
+        return result;
+
+
+//        ArrayList<Element> elements = parseChildren(jsonObject.getJSONArray("children"));
+//        for (Element element : elements) {
+////            result.addCell(element);
+//            if (element instanceof PdfPCell) {
+//                result.addCell((PdfPCell) element);
+//            } else if (element instanceof PdfPTable) {
+//                result.addCell((PdfPTable) element);
+//            }
+//        }
+//        result.setSpacingBefore(0);
+//        result.getDefaultCell().setBorder(PdfPCell.BOX);
+//        result.completeRow();
     }
 
     /**
@@ -508,17 +657,19 @@ public class PrePdf {
 
 
     }
+
     /**
+     * @return java.lang.String
      * @description 转义
-     * @author      刘鑫（1661）
-     * @return      java.lang.String
-     * @Params      [str]
-     * @date        2019/11/9 15:25
+     * @author 刘鑫（1661）
+     * @Params [str]
+     * @date 2019/11/9 15:25
      */
-    public String escapeStr(String str){
-        String result = str.replace("\\n","\n");
-        return  result;
+    public String escapeStr(String str) {
+        String result = str.replace("\\n", "\n");
+        return result;
     }
+
     /**
      * @return com.itextpdf.text.Paragraph
      * @throws
@@ -604,7 +755,7 @@ public class PrePdf {
         pdfPCell.setColspan(colSpan);
         pdfPCell.setRowspan(rowSpan);
         pdfPCell.setRotation(rotation);
-        if(cellHeight > 0){
+        if (cellHeight > 0) {
             pdfPCell.setFixedHeight(cellHeight);
         }
         pdfPCell.setPaddingLeft(paddingLeft);
@@ -622,27 +773,29 @@ public class PrePdf {
 //        pdfPCell.addElement(elements.get(0));
         return pdfPCell;
     }
+
     /**
+     * @return com.itextpdf.text.pdf.PdfPCell
      * @description 根据不同类型的元素返回单元格对象，是因为如果用
-     *              com.itextpdf.text.pdf.PdfPCell#addElement(com.itextpdf.text.Element)这个方法，添加段落元素时单元格左右居中不起作用。
-     * @author      刘鑫（1661）
-     * @return      com.itextpdf.text.pdf.PdfPCell
-     * @Params      [element]
-     * @date        2019/11/8 21:14
+     * com.itextpdf.text.pdf.PdfPCell#addElement(com.itextpdf.text.Element)这个方法，添加段落元素时单元格左右居中不起作用。
+     * @author 刘鑫（1661）
+     * @Params [element]
+     * @date 2019/11/8 21:14
      */
-    public PdfPCell getPCell(Element element){
+    public PdfPCell getPCell(Element element) {
         PdfPCell result = null;
-        if(element instanceof PdfPTable){
+        if (element instanceof PdfPTable) {
             result = new PdfPCell((PdfPTable) element);
-        }else if(element instanceof PdfPCell){
+        } else if (element instanceof PdfPCell) {
             result = new PdfPCell((PdfPCell) element);
-        }else if(element instanceof Paragraph){
+        } else if (element instanceof Paragraph) {
             result = new PdfPCell((Paragraph) element);
-        }else if(element instanceof Image){
+        } else if (element instanceof Image) {
             result = new PdfPCell((Image) element);
         }
         return result;
     }
+
     /**
      * @return com.itextpdf.text.Document
      * @throws
@@ -664,7 +817,7 @@ public class PrePdf {
             rectangle = rectangle.rotate();
         }
 
-        document = new Document(rectangle,marginLeft, marginRight, marginTop, marginBottom);
+        document = new Document(rectangle, marginLeft, marginRight, marginTop, marginBottom);
 //        document.setMargins(marginLeft, marginRight, marginTop, marginBottom);
         return document;
     }
@@ -688,7 +841,7 @@ public class PrePdf {
      * @Params [input]
      * @date 2019/10/30 21:27
      */
-    public static java.util.List<String> getKeyList(String input) {
+    public java.util.List<String> getKeyList(String input) {
         if (input == null || input.length() < 1) {
             return null;
         }
