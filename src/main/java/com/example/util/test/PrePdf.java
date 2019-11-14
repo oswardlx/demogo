@@ -283,30 +283,13 @@ public class PrePdf {
      * @date 2019/11/13 22:53
      */
     public JSONObject getLoopProperties() {
+        JSONObject tempJO;
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("repeat", 3);
         jsonObject.put("rows", 24);
         jsonObject.put("resultWidthRadio", 100f);
         jsonObject.put("hasHead", true);
         jsonObject.put("cols", 6);
-        jsonObject.put("head1", "课   程\n名  称");
-        jsonObject.put("head2", "课程\n性质");
-        jsonObject.put("head3", "学\n分");
-        jsonObject.put("head4", "成\n绩");
-        jsonObject.put("head5", "补\n考");
-        jsonObject.put("head6", "重\n修");
-        jsonObject.put("vAlign1", PdfPCell.ALIGN_MIDDLE);
-        jsonObject.put("vAlign2", PdfPCell.ALIGN_MIDDLE);
-        jsonObject.put("vAlign3", PdfPCell.ALIGN_MIDDLE);
-        jsonObject.put("vAlign4", PdfPCell.ALIGN_MIDDLE);
-        jsonObject.put("vAlign5", PdfPCell.ALIGN_MIDDLE);
-        jsonObject.put("vAlign6", PdfPCell.ALIGN_MIDDLE);
-        jsonObject.put("hAlign1", PdfPCell.ALIGN_LEFT);
-        jsonObject.put("hAlign2", PdfPCell.ALIGN_CENTER);
-        jsonObject.put("hAlign3", PdfPCell.ALIGN_CENTER);
-        jsonObject.put("hAlign4", PdfPCell.ALIGN_CENTER);
-        jsonObject.put("hAlign5", PdfPCell.ALIGN_CENTER);
-        jsonObject.put("hAlign6", PdfPCell.ALIGN_CENTER);
         JSONArray colsRadioArr = new JSONArray();
         colsRadioArr.add(65);
         colsRadioArr.add(20);
@@ -314,11 +297,136 @@ public class PrePdf {
         colsRadioArr.add(10);
         colsRadioArr.add(10);
         colsRadioArr.add(10);
+        jsonObject.put("colsRadioArr", colsRadioArr);
+        jsonObject.put("repeatWidthRadio", 100f);
+        jsonObject.put("head1", "课   程\n名  称");
+        jsonObject.put("head2", "课程\n性质");
+        jsonObject.put("head3", "学\n分");
+        jsonObject.put("head4", "成\n绩");
+        jsonObject.put("head5", "补\n考");
+        jsonObject.put("head6", "重\n修");
+        jsonObject.put("headFontSize", "10");
+        jsonObject.put("headFontStyle", "10");
+        //1
+        JSONArray cellPropArr = new JSONArray();
+        tempJO = new JSONObject();
+        tempJO.put("colSpan", 1);
+        tempJO.put("rowSpan", 1);
+        tempJO.put("rotation", 0);
+        tempJO.put("cellHeight", 13);
+        tempJO.put("paddingLeft", 0);
+        tempJO.put("paddingRight", 0);
+        tempJO.put("paddingTop", 0);
+        tempJO.put("paddingBottom", 0);
+        tempJO.put("borderWidthLeft", 0);
+        tempJO.put("borderWidthRight", 0);
+        tempJO.put("borderWidthTop", 0);
+        tempJO.put("horizontalAlignment", PdfPCell.ALIGN_LEFT);
+        tempJO.put("verticalAlignment", PdfPCell.ALIGN_MIDDLE);
+        tempJO.put("fontSize", 9);
+        tempJO.put("fontStyle", 0);
+        tempJO.put("fontBase", "Alibaba-PuHuiTi-Regular.otf");
+        cellPropArr.add(tempJO);
+        //2
+        tempJO = new JSONObject();
+        tempJO.put("colSpan", 1);
+        tempJO.put("rowSpan", 1);
+        tempJO.put("rotation", 0);
+        tempJO.put("cellHeight", 13);
+        tempJO.put("paddingLeft", 0);
+        tempJO.put("paddingRight", 0);
+        tempJO.put("paddingTop", 0);
+        tempJO.put("paddingBottom", 0);
+        tempJO.put("borderWidthLeft", 0);
+        tempJO.put("borderWidthRight", 0);
+        tempJO.put("borderWidthTop", 0);
+        tempJO.put("horizontalAlignment", PdfPCell.ALIGN_CENTER);
+        tempJO.put("verticalAlignment", PdfPCell.ALIGN_MIDDLE);
+        tempJO.put("fontSize", 9);
+        tempJO.put("fontStyle", 0);
+        tempJO.put("fontBase", "Alibaba-PuHuiTi-Regular.otf");
+        cellPropArr.add(tempJO);
+        //3
+        tempJO = new JSONObject();
+        tempJO.put("colSpan", 1);
+        tempJO.put("rowSpan", 1);
+        tempJO.put("rotation", 0);
+        tempJO.put("cellHeight", 13);
+        tempJO.put("paddingLeft", 0);
+        tempJO.put("paddingRight", 0);
+        tempJO.put("paddingTop", 0);
+        tempJO.put("paddingBottom", 0);
+        tempJO.put("borderWidthLeft", 0);
+        tempJO.put("borderWidthRight", 0);
+        tempJO.put("borderWidthTop", 0);
+        tempJO.put("horizontalAlignment", PdfPCell.ALIGN_CENTER);
+        tempJO.put("verticalAlignment", PdfPCell.ALIGN_MIDDLE);
+        tempJO.put("fontSize", 9);
+        tempJO.put("fontStyle", 0);
+        tempJO.put("fontBase", "Alibaba-PuHuiTi-Regular.otf");
+        cellPropArr.add(tempJO);
+        //4
+        tempJO = new JSONObject();
+        tempJO.put("colSpan", 1);
+        tempJO.put("rowSpan", 1);
+        tempJO.put("rotation", 0);
+        tempJO.put("cellHeight", 13);
+        tempJO.put("paddingLeft", 0);
+        tempJO.put("paddingRight", 0);
+        tempJO.put("paddingTop", 0);
+        tempJO.put("paddingBottom", 0);
+        tempJO.put("borderWidthLeft", 0);
+        tempJO.put("borderWidthRight", 0);
+        tempJO.put("borderWidthTop", 0);
+        tempJO.put("horizontalAlignment", PdfPCell.ALIGN_CENTER);
+        tempJO.put("verticalAlignment", PdfPCell.ALIGN_MIDDLE);
+        tempJO.put("fontSize", 9);
+        tempJO.put("fontStyle", 0);
+        tempJO.put("fontBase", "Alibaba-PuHuiTi-Regular.otf");
+        cellPropArr.add(tempJO);
+        //5
+        tempJO = new JSONObject();
+        tempJO.put("colSpan", 1);
+        tempJO.put("rowSpan", 1);
+        tempJO.put("rotation", 0);
+        tempJO.put("cellHeight", 13);
+        tempJO.put("paddingLeft", 0);
+        tempJO.put("paddingRight", 0);
+        tempJO.put("paddingTop", 0);
+        tempJO.put("paddingBottom", 0);
+        tempJO.put("borderWidthLeft", 0);
+        tempJO.put("borderWidthRight", 0);
+        tempJO.put("borderWidthTop", 0);
+        tempJO.put("horizontalAlignment", PdfPCell.ALIGN_CENTER);
+        tempJO.put("verticalAlignment", PdfPCell.ALIGN_MIDDLE);
+        tempJO.put("fontSize", 9);
+        tempJO.put("fontStyle", 0);
+        tempJO.put("fontBase", "Alibaba-PuHuiTi-Regular.otf");
+        cellPropArr.add(tempJO);
+        //6
+        tempJO = new JSONObject();
+        tempJO.put("colSpan", 1);
+        tempJO.put("rowSpan", 1);
+        tempJO.put("rotation", 0);
+        tempJO.put("cellHeight", 13);
+        tempJO.put("paddingLeft", 0);
+        tempJO.put("paddingRight", 0);
+        tempJO.put("paddingTop", 0);
+        tempJO.put("paddingBottom", 0);
+        tempJO.put("borderWidthLeft", 0);
+        tempJO.put("borderWidthRight", 0);
+        tempJO.put("borderWidthTop", 0);
+        tempJO.put("horizontalAlignment", PdfPCell.ALIGN_CENTER);
+        tempJO.put("verticalAlignment", PdfPCell.ALIGN_MIDDLE);
+        tempJO.put("fontSize", 9);
+        tempJO.put("fontStyle", 0);
+        tempJO.put("fontBase", "Alibaba-PuHuiTi-Regular.otf");
+        cellPropArr.add(tempJO);
+
 //        JSONArray colProperties = new JSONArray();
 //        JSONObject col1 = new JSONObject();
 //        col1.put("")
-        jsonObject.put("colsRadioArr", colsRadioArr);
-        jsonObject.put("repeatWidthRadio", 100f);
+        jsonObject.put("cellPropArr",cellPropArr);
         return jsonObject;
     }
 
@@ -393,7 +501,7 @@ public class PrePdf {
      * @Params []
      * @date 2019/10/29 21:46
      */
-    public void initData() {
+    public JSONObject initData() {
         JSONObject dataMap = new JSONObject();
         dataMap.put("param1", "参数1");
         dataMap.put("param2", "参数2");
@@ -419,54 +527,51 @@ public class PrePdf {
         dataMap.put("dyrq", dyrq);
         JSONArray cjJA = initArray();
         dataMap.put("cjJA", cjJA);
-        data = dataMap;
-        properties = getLoopProperties();
+        dataMap.put("loopProperties",getLoopProperties());
+//        data = dataMap;
+//        properties = getLoopProperties();
+        return dataMap;
     }
 
     public JSONArray initArray() {
         JSONArray dataJA = new JSONArray();
         JSONObject dataTemp;
-        for (int x = 0; x < 100; x++) {
-            if (x % 7 == 0) {
+        for (int x = 0; x < 2; x++) {
+            dataTemp = new JSONObject();
+            dataTemp.put("text", "2012-2013学年 第"+x+"学期");
+            dataTemp.put("colSpan", 6);
+            dataTemp.put("rowSpan", 1);
+            dataJA.add(dataTemp);
+            for (int y = 0; y < 2; y++) {
                 dataTemp = new JSONObject();
-                dataTemp.put("xnxq", "2012-2013学年 第1学期");
-                dataTemp.put("xnxqVSpan", 6);
-                dataTemp.put("xnxqHSpan", 1);
-                dataTemp.put("xnxqHAilgn", PdfPCell.ALIGN_CENTER);
-                dataTemp.put("xnxqVAilgn", PdfPCell.ALIGN_MIDDLE);
+                dataTemp.put("text", "课程名称" + x);
+                dataTemp.put("colSpan", 1);
+                dataTemp.put("rowSpan", 1);
                 dataJA.add(dataTemp);
-            } else {
                 dataTemp = new JSONObject();
-                dataTemp.put("kcmc", "课程名称" + x);
-                dataTemp.put("kcmcVSpan", 1);
-                dataTemp.put("kcmcHSpan", 1);
-                dataTemp.put("kcmcHAilgn", PdfPCell.ALIGN_LEFT);
-                dataTemp.put("kcmcVAilgn", PdfPCell.ALIGN_MIDDLE);
-                dataTemp.put("kcxz", "课程性质" + x);
-                dataTemp.put("kcxzVSpan", 1);
-                dataTemp.put("kcxzHSpan", 1);
-                dataTemp.put("kcxzHAilgn", PdfPCell.ALIGN_CENTER);
-                dataTemp.put("kcxzVAilgn", PdfPCell.ALIGN_MIDDLE);
-                dataTemp.put("xf", "学分" + x);
-                dataTemp.put("xfVSpan", 1);
-                dataTemp.put("xfHSpan", 1);
-                dataTemp.put("xfHAilgn", PdfPCell.ALIGN_CENTER);
-                dataTemp.put("xfVAilgn", PdfPCell.ALIGN_MIDDLE);
-                dataTemp.put("cj", "成绩" + x);
-                dataTemp.put("cjVSpan", 1);
-                dataTemp.put("cjHSpan", 1);
-                dataTemp.put("cjHAilgn", PdfPCell.ALIGN_CENTER);
-                dataTemp.put("cjVAilgn", PdfPCell.ALIGN_MIDDLE);
-                dataTemp.put("bk", "补考" + x);
-                dataTemp.put("bkVSpan", 1);
-                dataTemp.put("bkHSpan", 1);
-                dataTemp.put("bkHAilgn", PdfPCell.ALIGN_CENTER);
-                dataTemp.put("bkVAilgn", PdfPCell.ALIGN_MIDDLE);
-                dataTemp.put("cx", "重修" + x);
-                dataTemp.put("cxVSpan", 1);
-                dataTemp.put("cxHSpan", 1);
-                dataTemp.put("cxHAilgn", PdfPCell.ALIGN_CENTER);
-                dataTemp.put("cxVAilgn", PdfPCell.ALIGN_MIDDLE);
+                dataTemp.put("text", "课程性质" + x);
+                dataTemp.put("colSpan", 1);
+                dataTemp.put("rowSpan", 1);
+                dataJA.add(dataTemp);
+                dataTemp = new JSONObject();
+                dataTemp.put("text", "学分" + x);
+                dataTemp.put("colSpan", 1);
+                dataTemp.put("rowSpan", 1);
+                dataJA.add(dataTemp);
+                dataTemp = new JSONObject();
+                dataTemp.put("text", "成绩" + x);
+                dataTemp.put("colSpan", 1);
+                dataTemp.put("rowSpan", 1);
+                dataJA.add(dataTemp);
+                dataTemp = new JSONObject();
+                dataTemp.put("text", "补考" + x);
+                dataTemp.put("colSpan", 1);
+                dataTemp.put("rowSpan", 1);
+                dataJA.add(dataTemp);
+                dataTemp = new JSONObject();
+                dataTemp.put("text", "重修" + x);
+                dataTemp.put("colSpan", 1);
+                dataTemp.put("rowSpan", 1);
                 dataJA.add(dataTemp);
             }
         }
@@ -521,6 +626,87 @@ public class PrePdf {
 //            }
         }
         return null;
+    }
+
+    /**
+     * @return java.util.List<com.itextpdf.text.pdf.PdfPCell>
+     * @description
+     * @author 刘鑫（1661）
+     * @Params [dataJA]
+     * @date 2019/11/14 20:14
+     */
+    public List<PdfPCell> transDataToList(JSONArray dataJA, JSONObject propertiesJO) throws IOException, DocumentException {
+        List<PdfPCell> result = new ArrayList<>();
+        JSONObject tempJO;
+        JSONObject tempJO2;
+        PdfPCell tempCell;
+        Chunk tempChunk;
+        Paragraph tempParagraph;
+        int cols = propertiesJO.getIntValue("cols");
+        JSONArray cellPropArr = propertiesJO.getJSONArray("cellPropArr");
+        for (int x = 0; x < dataJA.size(); x++) {
+            tempJO = dataJA.getJSONObject(x);
+            tempJO2 = cellPropArr.getJSONObject(tempJO.getIntValue("colSpan")%cols);
+            tempCell = getDataToCell(tempJO,propertiesJO);
+            result.add(tempCell);
+        }
+        return result;
+    }
+
+    /**
+     * @return com.itextpdf.text.pdf.PdfPCell
+     * @description 将数据转获取cell
+     * @author 刘鑫（1661）
+     * @Params [dataJO, propertiesJO]
+     * @date 2019/11/14 20:54
+     */
+    public PdfPCell getDataToCell(JSONObject dataJO, JSONObject propertiesJO) throws IOException, DocumentException {
+        int colSpan = dataJO.getIntValue("colSpan");
+        int rowSpan = dataJO.getIntValue("rowSpan");
+        int rotation = propertiesJO.getIntValue("rotation");
+        int cellHeight = propertiesJO.getIntValue("cellHeight");
+        int paddingLeft = propertiesJO.getIntValue("paddingLeft");
+        int paddingRight = propertiesJO.getIntValue("paddingRight");
+        int paddingTop = propertiesJO.getIntValue("paddingTop");
+        int paddingBottom = propertiesJO.getIntValue("paddingBottom");
+        int horizontalAlignment = propertiesJO.getIntValue("horizontalAlignment");
+        int verticalAlignment = propertiesJO.getIntValue("verticalAlignment");
+        float borderWidthLeft = propertiesJO.getFloatValue("borderWidthLeft");
+        float borderWidthRight = propertiesJO.getFloatValue("borderWidthRight");
+        float borderWidthTop = propertiesJO.getFloatValue("borderWidthTop");
+        float borderWidthBottom = propertiesJO.getFloatValue("borderWidthBottom");
+        String fontBase = propertiesJO.getString("fontBase");
+        int fontSize = propertiesJO.getIntValue("fontSize");
+        int fontStyle = propertiesJO.getIntValue("fontStyle");
+        String text = dataJO.getString("text");
+        fontBase = StringUtils.defaultIfEmpty(fontBase, "Alibaba-PuHuiTi-Regular.otf");
+        BaseFont bfChinese = getLocalFont(fontBase);
+        //设置字体样式
+        Font textFont = new Font(bfChinese, fontSize, fontStyle);
+        Chunk chunk = new Chunk();
+        chunk.append(StringUtils.defaultIfEmpty(text, ""));
+        chunk.setFont(textFont);
+        Paragraph paragraph = new Paragraph();
+        paragraph.add(chunk);
+        PdfPCell pdfPCell = new PdfPCell(paragraph);
+        pdfPCell.setColspan(colSpan == 0 ? 1 : colSpan);
+        pdfPCell.setRowspan(rowSpan == 0 ? 1 : rowSpan);
+        pdfPCell.setRotation(rotation);
+        if (cellHeight > 0) {
+            pdfPCell.setFixedHeight(cellHeight);
+        }
+        pdfPCell.setPaddingLeft(paddingLeft);
+        pdfPCell.setPaddingRight(paddingRight);
+        pdfPCell.setPaddingTop(paddingTop);
+        pdfPCell.setPaddingBottom(paddingBottom);
+        pdfPCell.setHorizontalAlignment(horizontalAlignment);
+        pdfPCell.setVerticalAlignment(verticalAlignment);
+        pdfPCell.setBorderWidthLeft(borderWidthLeft);
+        pdfPCell.setBorderWidthRight(borderWidthRight);
+        pdfPCell.setBorderWidthTop(borderWidthTop);
+        pdfPCell.setBorderWidthBottom(borderWidthBottom);
+        pdfPCell.setBorder(PdfPCell.BOX);
+        return pdfPCell;
     }
 
     /**
@@ -747,10 +933,7 @@ public class PrePdf {
         JSONArray childrenObjArr = jsonObject.getJSONArray("children");
         JSONObject childrenObj = childrenObjArr.getJSONObject(0);
         Element childrenElement = initElement(childrenObj);
-//        Paragraph paragraph = initParagraph(childrenObj);
-//        PdfPCell pdfPCell = new PdfPCell(paragraph);
         PdfPCell pdfPCell = null;
-
         pdfPCell = getPCell(childrenElement);
         pdfPCell.setColspan(colSpan);
         pdfPCell.setRowspan(rowSpan);
@@ -769,8 +952,6 @@ public class PrePdf {
         pdfPCell.setBorderWidthTop(borderWidthTop);
         pdfPCell.setBorderWidthBottom(borderWidthBottom);
         pdfPCell.setBorder(PdfPCell.BOX);
-//        ArrayList<Element> elements = parseChildren(jsonObject.getJSONArray("children"));
-//        pdfPCell.addElement(elements.get(0));
         return pdfPCell;
     }
 
