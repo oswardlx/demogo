@@ -28,6 +28,7 @@ public class DemoApplicationTests {
         JSONObject loopProperties = prePdf.getLoopProperties();
 
         List<PdfPCell> list = prePdf.transDataToList(cjJA,loopProperties);
+        System.out.println(list.size());
     }
 
 

@@ -23,6 +23,20 @@ public class PrePdf {
 
     public static JSONObject data;
     public static JSONObject properties;
+    public static BaseFont BFCHINESE;
+
+    static {
+        try {
+            BFCHINESE = getLocalFont("Alibaba-PuHuiTi-Regular.otf");
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public PrePdf() throws IOException, DocumentException {
+    }
 
     public static void main(String[] args) throws Exception {
 //        createPDF();
@@ -61,7 +75,6 @@ public class PrePdf {
 
         //创建输出流
         PdfWriter writer = PdfWriter.getInstance(doc, outputStream);
-        writer.setEncryption("Hello".getBytes(), "World".getBytes(), PdfWriter.ALLOW_SCREENREADERS, PdfWriter.STANDARD_ENCRYPTION_128);
 
         doc.open();
 //        doc.newPage();
@@ -219,8 +232,11 @@ public class PrePdf {
     }
 
     public void tableTest(OutputStream outputStream) throws DocumentException, IOException {
+        long startTime = System.currentTimeMillis();
+        String path = ClassUtils.getDefaultClassLoader().getResource("").getPath();
+        String parentPath = "/static/templates";
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
         Rectangle rect = new Rectangle(PageSize.A4);
-
         Document doc = new Document(rect);
         doc.setMargins(16, 16, 16, 16);
         BaseFont bfChinese = BaseFont.createFont("STSong-Light", "UniGB-UCS2-H", BaseFont.NOT_EMBEDDED);
@@ -272,6 +288,51 @@ public class PrePdf {
         pdfPTable.addCell(cell2);
         doc.add(pdfPTable);
         doc.close();
+
+        String timestamp = System.currentTimeMillis() + "";
+        String tempFilePath = "/gogo" + timestamp + ".pdf";
+        File pdfFile = new File(path + parentPath + tempFilePath);
+        if (pdfFile.exists()) {
+            pdfFile.delete();
+        }
+        byte bWrite[] = os.toByteArray();
+        OutputStream fileOs = new FileOutputStream(pdfFile);
+        int size = 1024 * 100;
+        byte[] temp = null;
+        for (int x = 0; x < bWrite.length; x += size) {
+            if (x + size > bWrite.length) {
+                temp = Arrays.copyOfRange(bWrite, x, bWrite.length);
+                fileOs.write(temp);
+                break;
+            }
+            temp = Arrays.copyOfRange(bWrite, x, x + size);
+            fileOs.write(temp);
+        }
+        fileOs.close();
+
+
+//        executorDeleteFile(path + parentPath + tempFilePath, 10, 2000);
+//        return parentPath + tempFilePath;
+
+        byte bWrite2 [] = os.toByteArray();
+        PdfReader reader = new PdfReader(bWrite2);
+//        writer.setEncryption("Hello".getBytes(), "World".getBytes(), PdfWriter.ALLOW_SCREENREADERS, PdfWriter.STANDARD_ENCRYPTION_128);
+        PdfStamper stamper = PdfStamper.createSignature(reader, outputStream, '\0', null, true);
+        // 获取数字签章属性对象，设定数字签章的属性
+        PdfSignatureAppearance appearance = stamper.getSignatureAppearance();
+        appearance.setReason("写个原因");
+        appearance.setLocation("写个位置");
+        //设置签名的位置，页码，签名域名称，多次追加签名的时候，签名预名称不能一样
+        //签名的位置，是图章相对于pdf页面的位置坐标，原点为pdf页面左下角
+        //四个参数的分别是，图章左下角x，图章左下角y，图章右上角x，图章右上角y
+        appearance.setVisibleSignature(new Rectangle(200, 200, 300, 300), 1, "sig1");
+        //读取图章图片，这个image是itext包的image
+        Image image = Image.getInstance("F:\\prosssss\\demogogogogog\\src\\main\\resources\\static\\pic\\fff.png");
+        appearance.setSignatureGraphic(image);
+        appearance.setCertificationLevel(PdfSignatureAppearance.NOT_CERTIFIED);
+        //设置图章的显示方式，如下选择的是只显示图章（还有其他的模式，可以图章和签名描述一同显示）
+        appearance.setRenderingMode(PdfSignatureAppearance.RenderingMode.GRAPHIC);
+        os.close();
     }
 
 
@@ -290,9 +351,12 @@ public class PrePdf {
         jsonObject.put("resultWidthRadio", 100f);
         jsonObject.put("hasHead", true);
         jsonObject.put("cols", 6);
+        jsonObject.put("fontSize", 8);
+        jsonObject.put("cellHeight", 13
+        );
         JSONArray colsRadioArr = new JSONArray();
-        colsRadioArr.add(65);
-        colsRadioArr.add(20);
+        colsRadioArr.add(40);
+        colsRadioArr.add(10);
         colsRadioArr.add(10);
         colsRadioArr.add(10);
         colsRadioArr.add(10);
@@ -307,6 +371,10 @@ public class PrePdf {
         jsonObject.put("head6", "重\n修");
         jsonObject.put("headFontSize", "10");
         jsonObject.put("headFontStyle", "10");
+        jsonObject.put("borderWidthLeft", "0.5");
+        jsonObject.put("borderWidthRight", "0.5");
+        jsonObject.put("borderWidthTop", "0.5");
+        jsonObject.put("borderWidthBottom", "0.5");
         //1
         JSONArray cellPropArr = new JSONArray();
         tempJO = new JSONObject();
@@ -314,16 +382,17 @@ public class PrePdf {
         tempJO.put("rowSpan", 1);
         tempJO.put("rotation", 0);
         tempJO.put("cellHeight", 13);
-        tempJO.put("paddingLeft", 0);
+        tempJO.put("paddingLeft", 4);
         tempJO.put("paddingRight", 0);
         tempJO.put("paddingTop", 0);
         tempJO.put("paddingBottom", 0);
-        tempJO.put("borderWidthLeft", 0);
-        tempJO.put("borderWidthRight", 0);
-        tempJO.put("borderWidthTop", 0);
+        tempJO.put("borderWidthBottom", 0.5);
+        tempJO.put("borderWidthLeft", 0.5);
+        tempJO.put("borderWidthRight", 0.5);
+        tempJO.put("borderWidthTop", 0.5);
         tempJO.put("horizontalAlignment", PdfPCell.ALIGN_LEFT);
         tempJO.put("verticalAlignment", PdfPCell.ALIGN_MIDDLE);
-        tempJO.put("fontSize", 9);
+        tempJO.put("fontSize", 8);
         tempJO.put("fontStyle", 0);
         tempJO.put("fontBase", "Alibaba-PuHuiTi-Regular.otf");
         cellPropArr.add(tempJO);
@@ -333,16 +402,17 @@ public class PrePdf {
         tempJO.put("rowSpan", 1);
         tempJO.put("rotation", 0);
         tempJO.put("cellHeight", 13);
-        tempJO.put("paddingLeft", 0);
+        tempJO.put("paddingLeft", 4);
         tempJO.put("paddingRight", 0);
         tempJO.put("paddingTop", 0);
         tempJO.put("paddingBottom", 0);
-        tempJO.put("borderWidthLeft", 0);
-        tempJO.put("borderWidthRight", 0);
-        tempJO.put("borderWidthTop", 0);
-        tempJO.put("horizontalAlignment", PdfPCell.ALIGN_CENTER);
+        tempJO.put("borderWidthBottom", 0.5);
+        tempJO.put("borderWidthLeft", 0.5);
+        tempJO.put("borderWidthRight", 0.5);
+        tempJO.put("borderWidthTop", 0.5);
+        tempJO.put("horizontalAlignment", PdfPCell.ALIGN_LEFT);
         tempJO.put("verticalAlignment", PdfPCell.ALIGN_MIDDLE);
-        tempJO.put("fontSize", 9);
+        tempJO.put("fontSize", 8);
         tempJO.put("fontStyle", 0);
         tempJO.put("fontBase", "Alibaba-PuHuiTi-Regular.otf");
         cellPropArr.add(tempJO);
@@ -352,16 +422,17 @@ public class PrePdf {
         tempJO.put("rowSpan", 1);
         tempJO.put("rotation", 0);
         tempJO.put("cellHeight", 13);
-        tempJO.put("paddingLeft", 0);
+        tempJO.put("paddingLeft", 4);
         tempJO.put("paddingRight", 0);
         tempJO.put("paddingTop", 0);
         tempJO.put("paddingBottom", 0);
-        tempJO.put("borderWidthLeft", 0);
-        tempJO.put("borderWidthRight", 0);
-        tempJO.put("borderWidthTop", 0);
+        tempJO.put("borderWidthBottom", 0.5);
+        tempJO.put("borderWidthLeft", 0.5);
+        tempJO.put("borderWidthRight", 0.5);
+        tempJO.put("borderWidthTop", 0.5);
         tempJO.put("horizontalAlignment", PdfPCell.ALIGN_CENTER);
         tempJO.put("verticalAlignment", PdfPCell.ALIGN_MIDDLE);
-        tempJO.put("fontSize", 9);
+        tempJO.put("fontSize", 8);
         tempJO.put("fontStyle", 0);
         tempJO.put("fontBase", "Alibaba-PuHuiTi-Regular.otf");
         cellPropArr.add(tempJO);
@@ -371,16 +442,17 @@ public class PrePdf {
         tempJO.put("rowSpan", 1);
         tempJO.put("rotation", 0);
         tempJO.put("cellHeight", 13);
-        tempJO.put("paddingLeft", 0);
+        tempJO.put("paddingLeft", 4);
         tempJO.put("paddingRight", 0);
         tempJO.put("paddingTop", 0);
         tempJO.put("paddingBottom", 0);
-        tempJO.put("borderWidthLeft", 0);
-        tempJO.put("borderWidthRight", 0);
-        tempJO.put("borderWidthTop", 0);
+        tempJO.put("borderWidthBottom", 0.5);
+        tempJO.put("borderWidthLeft", 0.5);
+        tempJO.put("borderWidthRight", 0.5);
+        tempJO.put("borderWidthTop", 0.5);
         tempJO.put("horizontalAlignment", PdfPCell.ALIGN_CENTER);
         tempJO.put("verticalAlignment", PdfPCell.ALIGN_MIDDLE);
-        tempJO.put("fontSize", 9);
+        tempJO.put("fontSize", 8);
         tempJO.put("fontStyle", 0);
         tempJO.put("fontBase", "Alibaba-PuHuiTi-Regular.otf");
         cellPropArr.add(tempJO);
@@ -390,16 +462,17 @@ public class PrePdf {
         tempJO.put("rowSpan", 1);
         tempJO.put("rotation", 0);
         tempJO.put("cellHeight", 13);
-        tempJO.put("paddingLeft", 0);
+        tempJO.put("paddingLeft", 4);
         tempJO.put("paddingRight", 0);
         tempJO.put("paddingTop", 0);
         tempJO.put("paddingBottom", 0);
-        tempJO.put("borderWidthLeft", 0);
-        tempJO.put("borderWidthRight", 0);
-        tempJO.put("borderWidthTop", 0);
+        tempJO.put("borderWidthBottom", 0.5);
+        tempJO.put("borderWidthLeft", 0.5);
+        tempJO.put("borderWidthRight", 0.5);
+        tempJO.put("borderWidthTop", 0.5);
         tempJO.put("horizontalAlignment", PdfPCell.ALIGN_CENTER);
         tempJO.put("verticalAlignment", PdfPCell.ALIGN_MIDDLE);
-        tempJO.put("fontSize", 9);
+        tempJO.put("fontSize", 8);
         tempJO.put("fontStyle", 0);
         tempJO.put("fontBase", "Alibaba-PuHuiTi-Regular.otf");
         cellPropArr.add(tempJO);
@@ -409,16 +482,17 @@ public class PrePdf {
         tempJO.put("rowSpan", 1);
         tempJO.put("rotation", 0);
         tempJO.put("cellHeight", 13);
-        tempJO.put("paddingLeft", 0);
+        tempJO.put("paddingLeft", 4);
         tempJO.put("paddingRight", 0);
         tempJO.put("paddingTop", 0);
         tempJO.put("paddingBottom", 0);
-        tempJO.put("borderWidthLeft", 0);
-        tempJO.put("borderWidthRight", 0);
-        tempJO.put("borderWidthTop", 0);
+        tempJO.put("borderWidthBottom", 0.5);
+        tempJO.put("borderWidthLeft", 0.5);
+        tempJO.put("borderWidthRight", 0.5);
+        tempJO.put("borderWidthTop", 0.5);
         tempJO.put("horizontalAlignment", PdfPCell.ALIGN_CENTER);
         tempJO.put("verticalAlignment", PdfPCell.ALIGN_MIDDLE);
-        tempJO.put("fontSize", 9);
+        tempJO.put("fontSize", 8);
         tempJO.put("fontStyle", 0);
         tempJO.put("fontBase", "Alibaba-PuHuiTi-Regular.otf");
         cellPropArr.add(tempJO);
@@ -453,7 +527,10 @@ public class PrePdf {
         document.open();
         long endTime = System.currentTimeMillis();
         System.out.println("\ngetPath cost: " + Math.abs(endTime - startTime) + " (ms)");
-        int cjJAMount = data.getJSONArray("cjJA").size();
+        PdfPTable cPageNum =  initLoop();
+        PdfPTable mountTable = (PdfPTable)(cPageNum.getRow(0).getCells()[0].getColumn().getCompositeElements().get(0));
+        int rows = mountTable.getRows().size();
+        int cjJAMount = rows;
         int pageCount = cjJAMount / (properties.getIntValue("rows") * properties.getIntValue("repeat"));
         int pageResidue = cjJAMount % (properties.getIntValue("rows") * properties.getIntValue("repeat"));
         int pageNum = pageResidue > 0 ? pageCount + 1 : (pageCount > 0 ? pageCount : 1);
@@ -528,48 +605,50 @@ public class PrePdf {
         JSONArray cjJA = initArray();
         dataMap.put("cjJA", cjJA);
         dataMap.put("loopProperties",getLoopProperties());
-//        data = dataMap;
-//        properties = getLoopProperties();
+        data = dataMap;
+        properties = getLoopProperties();
         return dataMap;
     }
 
     public JSONArray initArray() {
         JSONArray dataJA = new JSONArray();
         JSONObject dataTemp;
-        for (int x = 0; x < 2; x++) {
+        for (int x = 0; x < 8; x++) {
             dataTemp = new JSONObject();
             dataTemp.put("text", "2012-2013学年 第"+x+"学期");
             dataTemp.put("colSpan", 6);
             dataTemp.put("rowSpan", 1);
+            dataTemp.put("horizontalAlignment", PdfPCell.ALIGN_CENTER);
+            dataTemp.put("verticalAlignment", PdfPCell.ALIGN_MIDDLE);
             dataJA.add(dataTemp);
-            for (int y = 0; y < 2; y++) {
+            for (int y = 0; y < 6; y++) {
                 dataTemp = new JSONObject();
-                dataTemp.put("text", "课程名称" + x);
+                dataTemp.put("text", "课程名称" + x+""+y);
                 dataTemp.put("colSpan", 1);
                 dataTemp.put("rowSpan", 1);
                 dataJA.add(dataTemp);
                 dataTemp = new JSONObject();
-                dataTemp.put("text", "课程性质" + x);
+                dataTemp.put("text", "性质" +  x+""+y);
                 dataTemp.put("colSpan", 1);
                 dataTemp.put("rowSpan", 1);
                 dataJA.add(dataTemp);
                 dataTemp = new JSONObject();
-                dataTemp.put("text", "学分" + x);
+                dataTemp.put("text", "学分" + x+""+y);
                 dataTemp.put("colSpan", 1);
                 dataTemp.put("rowSpan", 1);
                 dataJA.add(dataTemp);
                 dataTemp = new JSONObject();
-                dataTemp.put("text", "成绩" + x);
+                dataTemp.put("text", "成绩" + x+""+y);
                 dataTemp.put("colSpan", 1);
                 dataTemp.put("rowSpan", 1);
                 dataJA.add(dataTemp);
                 dataTemp = new JSONObject();
-                dataTemp.put("text", "补考" + x);
+                dataTemp.put("text", "补考" + x+""+y);
                 dataTemp.put("colSpan", 1);
                 dataTemp.put("rowSpan", 1);
                 dataJA.add(dataTemp);
                 dataTemp = new JSONObject();
-                dataTemp.put("text", "重修" + x);
+                dataTemp.put("text", "重修" + x+""+y);
                 dataTemp.put("colSpan", 1);
                 dataTemp.put("rowSpan", 1);
                 dataJA.add(dataTemp);
@@ -647,7 +726,7 @@ public class PrePdf {
         for (int x = 0; x < dataJA.size(); x++) {
             tempJO = dataJA.getJSONObject(x);
             tempJO2 = cellPropArr.getJSONObject(tempJO.getIntValue("colSpan")%cols);
-            tempCell = getDataToCell(tempJO,propertiesJO);
+            tempCell = getDataToCell(tempJO,tempJO2);
             result.add(tempCell);
         }
         return result;
@@ -669,8 +748,10 @@ public class PrePdf {
         int paddingRight = propertiesJO.getIntValue("paddingRight");
         int paddingTop = propertiesJO.getIntValue("paddingTop");
         int paddingBottom = propertiesJO.getIntValue("paddingBottom");
-        int horizontalAlignment = propertiesJO.getIntValue("horizontalAlignment");
-        int verticalAlignment = propertiesJO.getIntValue("verticalAlignment");
+        String hAlignmentStr = StringUtils.defaultIfEmpty(dataJO.getString("horizontalAlignment"),"");
+        String vAlignmentStr = StringUtils.defaultIfEmpty(dataJO.getString("verticalAlignment"),"");
+        int horizontalAlignment = hAlignmentStr.length()>0?Integer.parseInt(hAlignmentStr):propertiesJO.getIntValue("horizontalAlignment");
+        int verticalAlignment = hAlignmentStr.length()>0?Integer.parseInt(vAlignmentStr):propertiesJO.getIntValue("verticalAlignment");
         float borderWidthLeft = propertiesJO.getFloatValue("borderWidthLeft");
         float borderWidthRight = propertiesJO.getFloatValue("borderWidthRight");
         float borderWidthTop = propertiesJO.getFloatValue("borderWidthTop");
@@ -680,7 +761,7 @@ public class PrePdf {
         int fontStyle = propertiesJO.getIntValue("fontStyle");
         String text = dataJO.getString("text");
         fontBase = StringUtils.defaultIfEmpty(fontBase, "Alibaba-PuHuiTi-Regular.otf");
-        BaseFont bfChinese = getLocalFont(fontBase);
+        BaseFont bfChinese = BFCHINESE;
         //设置字体样式
         Font textFont = new Font(bfChinese, fontSize, fontStyle);
         Chunk chunk = new Chunk();
@@ -735,6 +816,7 @@ public class PrePdf {
                 break;
             case "Loop":
                 result = initLoop();
+                break;
             default:
                 result = null;
 
@@ -752,6 +834,7 @@ public class PrePdf {
     public PdfPTable initLoop() throws IOException, DocumentException {
         JSONObject loopPorperties = getLoopProperties();
         JSONArray loopData = initArray();
+        PdfPCell tempCell;
         int repeat = loopPorperties.getIntValue("repeat");
         PdfPTable tempTable;
         //构造分列Table参数
@@ -767,8 +850,7 @@ public class PrePdf {
         //构造结果Table
         float resultWidthRadio = loopPorperties.getFloatValue("resultWidthRadio");
         float[] resultArr = new float[repeat];
-        PdfPTable result = new PdfPTable(resultArr);
-        result.setWidthPercentage(resultWidthRadio);
+
         for (int x = 0; x < repeat; x++) {
             resultArr[x] = 1;
             //初始化分列Table
@@ -776,12 +858,39 @@ public class PrePdf {
             tempTable.setWidthPercentage(repeatWidthRadio);
             colTables[x] = tempTable;
         }
+        PdfPTable result = new PdfPTable(resultArr);
+        result.setWidthPercentage(resultWidthRadio);
         //todo 将数据写入
-
-
+        JSONArray cjJA = initArray();
+        JSONObject loopProperties = getLoopProperties();
+        List<PdfPCell> list = transDataToList(cjJA,loopProperties);
+        int fromNum = 0;
+        //写入数据格子
+        for (PdfPTable pt : colTables) {
+            for (int x = fromNum; x < list.size(); x++) {
+                if (pt.getRows().size() >= 0 && pt.getRows().size() < loopProperties.getIntValue("rows")) {
+                    pt.addCell(list.get(x));
+                    continue;
+                }
+                fromNum = x;
+                break;
+            }
+            //补空格
+            if(pt.getRows().size() < loopProperties.getIntValue("rows")){
+                int append = loopProperties.getIntValue("rows") - pt.getRows().size();
+                tempCell = new PdfPCell();
+                tempCell.setFixedHeight(loopPorperties.getIntValue("cellHeight"));
+                for (int y = 0; y < append*cols; y++) {
+                    pt.addCell(tempCell);
+                }
+            }
+            pt.completeRow();
+        }
         //todo 将分列table合入结果Talbe
         for (int x = 0; x < colTables.length; x++) {
-            result.addCell(new PdfPCell(colTables[x]));
+            tempCell = new PdfPCell(colTables[x]);
+//            tempCell.setFixedHeight(100);
+            result.addCell(tempCell);
         }
         result.setSpacingBefore(0);
         result.getDefaultCell().setBorder(PdfPCell.BOX);
@@ -803,6 +912,42 @@ public class PrePdf {
 //        result.completeRow();
     }
 
+
+    /**
+     * @return com.itextpdf.text.pdf.PdfPTable
+     * @description 写入数据项+猎头
+     * @author 刘鑫（1661）
+     * @Params [perPageRowNum, pageColNum, scoreHeight, maxSize, arrays, bfChinese, marginLeftRight, rectangle, allXscjCellList, cellNummap, dataTable, dataArr, pdfPCellArr, height]
+     * @date 2019/10/25 11:39
+     */
+    public PdfPTable writeDataShoot(List<PdfPCell> pdfPCellxlts,int perPageRowNum, int pageColNum, int scoreHeight, List<PdfPCell> allXscjCellList, HashMap<String, Integer> cellNummap, PdfPTable dataTable, PdfPTable[] dataArr, PdfPCell[] pdfPCellArr) throws IOException, DocumentException {
+        //定位
+        int fromNum = cellNummap.get("fromNum");
+        //写入列头
+        for (PdfPCell pCellx : pdfPCellxlts) {
+            for (PdfPTable pt : dataArr) {
+                pt.addCell(pCellx);
+            }
+        }
+        //写入数据格子
+        for (PdfPTable pt : dataArr) {
+            for (int x = fromNum; x < allXscjCellList.size(); x++) {
+                if (pt.getRows().size() >= 0 && pt.getRows().size() < perPageRowNum) {
+                    pt.addCell(allXscjCellList.get(x));
+                    continue;
+                }
+                fromNum = x;
+                break;
+            }
+        }
+        //table写入布局
+        for (int x = 0; x < pageColNum; x++) {
+            pdfPCellArr[x].addElement(dataArr[x]);
+            dataTable.addCell(pdfPCellArr[x]);
+        }
+        cellNummap.put("fromNum", fromNum);
+        return dataTable;
+    }
     /**
      * @return com.itextpdf.text.Chunk
      * @throws
@@ -852,7 +997,7 @@ public class PrePdf {
      * @date 2019/11/9 15:25
      */
     public String escapeStr(String str) {
-        String result = str.replace("\\n", "\n");
+        String result = StringUtils.defaultIfEmpty(str,"").replace("\\n", "\n");
         return result;
     }
 
@@ -1105,7 +1250,7 @@ public class PrePdf {
      * @Params [fontName]
      * @date 2019/10/31 21:12
      */
-    public BaseFont getLocalFont(String fontName) throws IOException, DocumentException {
+    public static BaseFont getLocalFont(String fontName) throws IOException, DocumentException {
         BaseFont result = null;
         InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream("font/" + fontName);
         if (stream == null) {
