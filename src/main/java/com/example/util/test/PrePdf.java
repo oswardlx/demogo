@@ -860,7 +860,7 @@ public class PrePdf {
         }
         PdfPTable result = new PdfPTable(resultArr);
         result.setWidthPercentage(resultWidthRadio);
-        //todo 将数据写入
+        //将数据写入
         JSONArray cjJA = initArray();
         JSONObject loopProperties = getLoopProperties();
         List<PdfPCell> list = transDataToList(cjJA,loopProperties);
