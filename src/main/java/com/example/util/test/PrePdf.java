@@ -108,36 +108,60 @@ public class PrePdf {
 //        table3.addCell(celltempr);
 //        table3.completeRow();
 //        doc.add(table3);
-
+        PdfPTable pdfPTable = new PdfPTable(new float[]{3, 7});
+        pdfPTable.setWidthPercentage(100);
+        pdfPTable.getDefaultCell().setBorder(PdfPCell.BOX);
+        PdfPCell cell2 = new PdfPCell();
+        cell2.setBorder(PdfPCell.BOX);
+        cell2.setVerticalAlignment(6);
+        cell2.setHorizontalAlignment(PdfPCell.ALIGN_RIGHT);
 
         // 创建一个有4列的表格
         PdfPTable table = new PdfPTable(2);
         table.setWidths(new float[]{105, 170});
         table.setWidthPercentage(100);
-
         PdfPCell celltemp0;
-        Chunk chunk1 = new Chunk("第三方", textFont);
-//        Paragraph paragraph = new Paragraph(56, "第三方", textFont);
+        Chunk chunk1 = new Chunk("head", textFont);
         Paragraph paragraph = new Paragraph();
         paragraph.add(chunk1);
         celltemp0 = new PdfPCell(paragraph);
-
-//        PdfPCell celltemp44 = new PdfPCell(paragraph);
-//        celltemp0.addElement(paragraph);
         celltemp0.setFixedHeight(20);
         celltemp0.setHorizontalAlignment(PdfPCell.ALIGN_RIGHT);
         table.addCell(celltemp0);
-
-
         PdfPCell celltemp;
-        celltemp = new PdfPCell(new Phrase("企业名称", textFont));
+        celltemp = new PdfPCell(new Phrase("head1", textFont));
         celltemp.setFixedHeight(20);
-//        celltemp.setPadding();
-//        Image img  = new Image() {
-//        }
-//        celltemp.setRotation(-90);
         table.addCell(celltemp);
+
+        celltemp = new PdfPCell(new Phrase("fotter", textFont));
+        celltemp.setFixedHeight(20);
+        table.addCell(celltemp);
+        celltemp = new PdfPCell(new Phrase("fotter", textFont));
+        celltemp.setFixedHeight(20);
+        table.addCell(celltemp);
+        for(int x = 0 ;x <100 ; x++) {
+            chunk1 = new Chunk("第三方", textFont);
+            paragraph = new Paragraph();
+            paragraph.add(chunk1);
+            celltemp0 = new PdfPCell(paragraph);
+            celltemp0.setFixedHeight(20);
+            celltemp0.setHorizontalAlignment(PdfPCell.ALIGN_RIGHT);
+            table.addCell(celltemp0);
+            celltemp = new PdfPCell(new Phrase("企业名称", textFont));
+            celltemp.setFixedHeight(20);
+            table.addCell(celltemp);
+        }
+
         table.completeRow();
+        table.setHeaderRows(0);
+        table.setFooterRows(2);
+
+        Paragraph paragraph2 = new Paragraph();
+        Chunk chunk2 = new Chunk("sdadsa", textFont);
+        paragraph2.add(chunk2);
+        cell2.addElement(paragraph2);
+        pdfPTable.addCell(cell2);
+        pdfPTable.addCell(cell2);
 //        Paragraph ph = new Paragraph("fff",textFont);
 //        table.addCell(ph);
 //        PdfPCell cell;
@@ -228,6 +252,7 @@ public class PrePdf {
 //        cell.setVerticalAlignment(1); //设置垂直居中
 //        table.addCell(cell);
         doc.add(table);
+        doc.add(pdfPTable);
         doc.close();
     }
 
@@ -410,7 +435,7 @@ public class PrePdf {
         tempJO.put("borderWidthLeft", 0.5);
         tempJO.put("borderWidthRight", 0.5);
         tempJO.put("borderWidthTop", 0.5);
-        tempJO.put("horizontalAlignment", PdfPCell.ALIGN_LEFT);
+        tempJO.put("horizontalAlignment", PdfPCell.ALIGN_CENTER);
         tempJO.put("verticalAlignment", PdfPCell.ALIGN_MIDDLE);
         tempJO.put("fontSize", 8);
         tempJO.put("fontStyle", 0);
@@ -723,9 +748,14 @@ public class PrePdf {
         Paragraph tempParagraph;
         int cols = propertiesJO.getIntValue("cols");
         JSONArray cellPropArr = propertiesJO.getJSONArray("cellPropArr");
+        //用于区分规则与不规则的单元格
+        int colIndex = 0;
         for (int x = 0; x < dataJA.size(); x++) {
             tempJO = dataJA.getJSONObject(x);
-            tempJO2 = cellPropArr.getJSONObject(tempJO.getIntValue("colSpan")%cols);
+            tempJO2 = cellPropArr.getJSONObject(colIndex%cols);
+            if(1==tempJO.getIntValue("colSpan")){
+                colIndex++;
+            }
             tempCell = getDataToCell(tempJO,tempJO2);
             result.add(tempCell);
         }
