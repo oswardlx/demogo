@@ -108,13 +108,13 @@ public class PrePdf {
 //        table3.addCell(celltempr);
 //        table3.completeRow();
 //        doc.add(table3);
-        PdfPTable pdfPTable = new PdfPTable(new float[]{3, 7});
-        pdfPTable.setWidthPercentage(100);
-        pdfPTable.getDefaultCell().setBorder(PdfPCell.BOX);
-        PdfPCell cell2 = new PdfPCell();
-        cell2.setBorder(PdfPCell.BOX);
-        cell2.setVerticalAlignment(6);
-        cell2.setHorizontalAlignment(PdfPCell.ALIGN_RIGHT);
+//        PdfPTable pdfPTable = new PdfPTable(new float[]{3, 7});
+//        pdfPTable.setWidthPercentage(100);
+//        pdfPTable.getDefaultCell().setBorder(PdfPCell.BOX);
+//        PdfPCell cell2 = new PdfPCell();
+//        cell2.setBorder(PdfPCell.BOX);
+//        cell2.setVerticalAlignment(6);
+//        cell2.setHorizontalAlignment(PdfPCell.ALIGN_RIGHT);
 
         // 创建一个有4列的表格
         PdfPTable table = new PdfPTable(2);
@@ -132,36 +132,35 @@ public class PrePdf {
         celltemp = new PdfPCell(new Phrase("head1", textFont));
         celltemp.setFixedHeight(20);
         table.addCell(celltemp);
+        celltemp = new PdfPCell(new Phrase("fotter", textFont));
+        celltemp.setFixedHeight(20);
+        table.addCell(celltemp);
+        celltemp = new PdfPCell(new Phrase("fotter", textFont));
+        celltemp.setFixedHeight(20);
+        table.addCell(celltemp);
 
-        celltemp = new PdfPCell(new Phrase("fotter", textFont));
-        celltemp.setFixedHeight(20);
-        table.addCell(celltemp);
-        celltemp = new PdfPCell(new Phrase("fotter", textFont));
-        celltemp.setFixedHeight(20);
-        table.addCell(celltemp);
         for(int x = 0 ;x <100 ; x++) {
-            chunk1 = new Chunk("第三方", textFont);
+            chunk1 = new Chunk("第三方"+x, textFont);
             paragraph = new Paragraph();
             paragraph.add(chunk1);
             celltemp0 = new PdfPCell(paragraph);
             celltemp0.setFixedHeight(20);
             celltemp0.setHorizontalAlignment(PdfPCell.ALIGN_RIGHT);
             table.addCell(celltemp0);
-            celltemp = new PdfPCell(new Phrase("企业名称", textFont));
+            celltemp = new PdfPCell(new Phrase("企业名称"+x, textFont));
             celltemp.setFixedHeight(20);
             table.addCell(celltemp);
         }
-
         table.completeRow();
-        table.setHeaderRows(0);
-        table.setFooterRows(2);
+        table.setHeaderRows(2);
+        table.setFooterRows(1);
 
-        Paragraph paragraph2 = new Paragraph();
-        Chunk chunk2 = new Chunk("sdadsa", textFont);
-        paragraph2.add(chunk2);
-        cell2.addElement(paragraph2);
-        pdfPTable.addCell(cell2);
-        pdfPTable.addCell(cell2);
+//        Paragraph paragraph2 = new Paragraph();
+//        Chunk chunk2 = new Chunk("sdadsa", textFont);
+//        paragraph2.add(chunk2);
+//        cell2.addElement(paragraph2);
+//        pdfPTable.addCell(cell2);
+//        pdfPTable.addCell(cell2);
 //        Paragraph ph = new Paragraph("fff",textFont);
 //        table.addCell(ph);
 //        PdfPCell cell;
@@ -252,7 +251,7 @@ public class PrePdf {
 //        cell.setVerticalAlignment(1); //设置垂直居中
 //        table.addCell(cell);
         doc.add(table);
-        doc.add(pdfPTable);
+//        doc.add(pdfPTable);
         doc.close();
     }
 
@@ -862,15 +861,14 @@ public class PrePdf {
      * @date 2019/11/13 19:49
      */
     public PdfPTable initLoop() throws IOException, DocumentException {
-        JSONObject loopPorperties = getLoopProperties();
-        JSONArray loopData = initArray();
+        JSONObject loopProperties = getLoopProperties();
         PdfPCell tempCell;
-        int repeat = loopPorperties.getIntValue("repeat");
+        int repeat = loopProperties.getIntValue("repeat");
         PdfPTable tempTable;
         //构造分列Table参数
-        JSONArray colsRadioArr = loopPorperties.getJSONArray("colsRadioArr");
-        int cols = loopPorperties.getIntValue("cols");
-        float repeatWidthRadio = loopPorperties.getFloatValue("repeatWidthRadio");
+        JSONArray colsRadioArr = loopProperties.getJSONArray("colsRadioArr");
+        int cols = loopProperties.getIntValue("cols");
+        float repeatWidthRadio = loopProperties.getFloatValue("repeatWidthRadio");
         float[] colsArr = new float[cols];
         int colsRadioArrSize = colsRadioArr.size();
         for (int x = 0; x < colsRadioArrSize; x++) {
@@ -878,7 +876,7 @@ public class PrePdf {
         }
         PdfPTable[] colTables = new PdfPTable[repeat];
         //构造结果Table
-        float resultWidthRadio = loopPorperties.getFloatValue("resultWidthRadio");
+        float resultWidthRadio = loopProperties.getFloatValue("resultWidthRadio");
         float[] resultArr = new float[repeat];
 
         for (int x = 0; x < repeat; x++) {
@@ -892,13 +890,12 @@ public class PrePdf {
         result.setWidthPercentage(resultWidthRadio);
         //将数据写入
         JSONArray cjJA = initArray();
-        JSONObject loopProperties = getLoopProperties();
         List<PdfPCell> list = transDataToList(cjJA,loopProperties);
         int fromNum = 0;
         //写入数据格子
         for (PdfPTable pt : colTables) {
             for (int x = fromNum; x < list.size(); x++) {
-                if (pt.getRows().size() >= 0 && pt.getRows().size() < loopProperties.getIntValue("rows")) {
+                if (pt.getRows().size() < loopProperties.getIntValue("rows")) {
                     pt.addCell(list.get(x));
                     continue;
                 }
@@ -909,7 +906,7 @@ public class PrePdf {
             if(pt.getRows().size() < loopProperties.getIntValue("rows")){
                 int append = loopProperties.getIntValue("rows") - pt.getRows().size();
                 tempCell = new PdfPCell();
-                tempCell.setFixedHeight(loopPorperties.getIntValue("cellHeight"));
+                tempCell.setFixedHeight(loopProperties.getIntValue("cellHeight"));
                 for (int y = 0; y < append*cols; y++) {
                     pt.addCell(tempCell);
                 }
