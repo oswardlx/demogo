@@ -1012,8 +1012,6 @@ public class PrePdf {
         result.append(resultData);
         result.setFont(textFont);
         return result;
-
-
     }
 
     /**
@@ -1024,7 +1022,7 @@ public class PrePdf {
      * @date 2019/11/9 15:25
      */
     public String escapeStr(String str) {
-        String result = StringUtils.defaultIfEmpty(str,"").replace("\\n", "\n");
+        String result = StringUtils.defaultIfEmpty(str,"").replace("{\\n}", "\n");
         return result;
     }
 

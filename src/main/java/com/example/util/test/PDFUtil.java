@@ -6,7 +6,7 @@ import com.itextpdf.text.Image;
 import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.*;
 import com.itextpdf.text.pdf.security.*;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
+//import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import java.io.*;
 import java.security.GeneralSecurityException;
@@ -43,12 +43,12 @@ public class PDFUtil {
 //            JOptionPane.showMessageDialog(null, e.getMessage());
 //            e.printStackTrace();
 //        }
-        byte[] fileData = sign("123456", KEYSTORE, //
-                SRC,//
-                IMG, 100, 290);
-        FileOutputStream f = new FileOutputStream(new File(DEST));
-        f.write(fileData);
-        f.close();
+//        byte[] fileData = sign("123456", KEYSTORE, //
+//                SRC,//
+//                IMG, 100, 290);
+//        FileOutputStream f = new FileOutputStream(new File(DEST));
+//        f.write(fileData);
+//        f.close();
     }
 
 
@@ -97,68 +97,68 @@ public class PDFUtil {
 
 
 
-    public static byte[] sign(String password, String keyStorePath, String signPdfSrc, String signImage,   float x, float y) {
-        File signPdfSrcFile = new File(signPdfSrc);
-        PdfReader reader = null;
-        ByteArrayOutputStream signPDFData = null;
-        PdfStamper stp = null;
-        FileInputStream fos = null;
-        try {
-            //  加入算法提供者
-            BouncyCastleProvider provider = new BouncyCastleProvider();
-            Security.addProvider(provider);
-            KeyStore ks = KeyStore.getInstance("PKCS12", new BouncyCastleProvider());
-            fos = new FileInputStream(keyStorePath);
-
-            // 私钥密码 为Pkcs生成证书是的私钥密码 123456
-            ks.load(fos, password.toCharArray());
-            String alias = (String) ks.aliases().nextElement();
-            // 获取私钥
-            PrivateKey key = (PrivateKey) ks.getKey(alias, password.toCharArray());
-            // 获取证书链
-            Certificate[] chain = ks.getCertificateChain(alias);
-            reader = new PdfReader(signPdfSrc);
-            signPDFData = new ByteArrayOutputStream();
-            // 临时pdf文件
-            File temp = new File(signPdfSrcFile.getParent(), System.currentTimeMillis() + ".pdf");
-            stp = PdfStamper.createSignature(reader, signPDFData, '\0', temp, true);
-            stp.setFullCompression();
-            PdfSignatureAppearance sap = stp.getSignatureAppearance();
-            sap.setReason("数字签名，不可改变");
-            // 使用png格式透明图片
-            Image image = Image.getInstance(signImage);
-            sap.setImageScale(0);
-            sap.setSignatureGraphic(image);
-            sap.setRenderingMode(PdfSignatureAppearance.RenderingMode.GRAPHIC);
-            // 是对应x轴和y轴坐标
-            sap.setVisibleSignature( new Rectangle(x, y, x + 185, y + 68), 1,  UUID.randomUUID().toString().replaceAll("-", ""));
-            stp.getWriter().setCompressionLevel(5);
-
-            ExternalDigest digest = new BouncyCastleDigest();
-            ExternalSignature signature = new PrivateKeySignature(key, DigestAlgorithms.SHA512, provider.getName());
-            MakeSignature.signDetached(sap, digest, signature, chain, null, null, null, 0, MakeSignature.CryptoStandard.CADES);
-            stp.close();
-            reader.close();
-            return signPDFData.toByteArray();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (signPDFData != null) {
-                try {
-                    signPDFData.close();
-                } catch (IOException e) {
-                }
-            }
-
-            if (fos != null) {
-                try {
-                    fos.close();
-                } catch (IOException e) {
-                }
-            }
-        }
-        return null;
-    }
+//    public static byte[] sign(String password, String keyStorePath, String signPdfSrc, String signImage,   float x, float y) {
+//        File signPdfSrcFile = new File(signPdfSrc);
+//        PdfReader reader = null;
+//        ByteArrayOutputStream signPDFData = null;
+//        PdfStamper stp = null;
+//        FileInputStream fos = null;
+//        try {
+//            //  加入算法提供者
+//            BouncyCastleProvider provider = new BouncyCastleProvider();
+//            Security.addProvider(provider);
+//            KeyStore ks = KeyStore.getInstance("PKCS12", new BouncyCastleProvider());
+//            fos = new FileInputStream(keyStorePath);
+//
+//            // 私钥密码 为Pkcs生成证书是的私钥密码 123456
+//            ks.load(fos, password.toCharArray());
+//            String alias = (String) ks.aliases().nextElement();
+//            // 获取私钥
+//            PrivateKey key = (PrivateKey) ks.getKey(alias, password.toCharArray());
+//            // 获取证书链
+//            Certificate[] chain = ks.getCertificateChain(alias);
+//            reader = new PdfReader(signPdfSrc);
+//            signPDFData = new ByteArrayOutputStream();
+//            // 临时pdf文件
+//            File temp = new File(signPdfSrcFile.getParent(), System.currentTimeMillis() + ".pdf");
+//            stp = PdfStamper.createSignature(reader, signPDFData, '\0', temp, true);
+//            stp.setFullCompression();
+//            PdfSignatureAppearance sap = stp.getSignatureAppearance();
+//            sap.setReason("数字签名，不可改变");
+//            // 使用png格式透明图片
+//            Image image = Image.getInstance(signImage);
+//            sap.setImageScale(0);
+//            sap.setSignatureGraphic(image);
+//            sap.setRenderingMode(PdfSignatureAppearance.RenderingMode.GRAPHIC);
+//            // 是对应x轴和y轴坐标
+//            sap.setVisibleSignature( new Rectangle(x, y, x + 185, y + 68), 1,  UUID.randomUUID().toString().replaceAll("-", ""));
+//            stp.getWriter().setCompressionLevel(5);
+//
+//            ExternalDigest digest = new BouncyCastleDigest();
+//            ExternalSignature signature = new PrivateKeySignature(key, DigestAlgorithms.SHA512, provider.getName());
+//            MakeSignature.signDetached(sap, digest, signature, chain, null, null, null, 0, MakeSignature.CryptoStandard.CADES);
+//            stp.close();
+//            reader.close();
+//            return signPDFData.toByteArray();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        } finally {
+//            if (signPDFData != null) {
+//                try {
+//                    signPDFData.close();
+//                } catch (IOException e) {
+//                }
+//            }
+//
+//            if (fos != null) {
+//                try {
+//                    fos.close();
+//                } catch (IOException e) {
+//                }
+//            }
+//        }
+//        return null;
+//    }
 
     /**
      * 加水印（字符串）

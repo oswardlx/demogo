@@ -6,6 +6,7 @@ import org.apache.commons.text.StringEscapeUtils;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 import java.util.regex.Pattern;
 
 public class Main {
@@ -82,12 +83,15 @@ public class Main {
 ////        String userAgent = UserAgentUtil.getUserAgents();
 //        Connection.Response hh= Jsoup.connect(weatherUrl).execute();
 //        System.out.println(hh.body());
-        String str = "zfsoft123&amp;";
-        String str2 = "zfsoft123$";
-        String str43 = "fsoft12&amp;&lt;a href='http://www.qq.com'&gt;QQ&lt;/a&gt;&lt;script&gt";
-        System.out.println(StringEscapeUtils.unescapeHtml4(str43));
-        System.out.println(StringEscapeUtils.unescapeHtml4(str));
-        System.out.println(StringEscapeUtils.escapeHtml3(str43));
+//        String str = "zfsoft123&amp;";
+//        String str2 = "zfsoft123$";
+//        String str43 = "fsoft12&amp;&lt;a href='http://www.qq.com'&gt;QQ&lt;/a&gt;&lt;script&gt";
+//        System.out.println(StringEscapeUtils.unescapeHtml4(str43));
+//        System.out.println(StringEscapeUtils.unescapeHtml4(str));
+        Scanner scan = new Scanner(System.in);
+        String gogo = scan.nextLine();
+        String ggf =  gogo.replace("{\\n}","\n");
+        System.out.println(StringEscapeUtils.escapeHtml3(ggf));
     }
     public static boolean isInteger(String str) {
         Pattern pattern = Pattern.compile("^[\\-|\\+]?\\d+(\\.\\d+)?$");

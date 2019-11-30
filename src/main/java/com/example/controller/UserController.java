@@ -67,7 +67,7 @@ public class UserController {
 //            OutputStream outputStream = response.getOutputStream();
 //            IOUtils.write(IOUtils.toByteArray(fileInputStream), outputStream);
 //            response.setHeader("Content-Disposition",
-//                    "inline; filename= file");
+//                    "inline; file∂name= file");
 //            outputStream.flush();
 //        } catch (FileNotFoundException e) {
 //            e.printStackTrace();
