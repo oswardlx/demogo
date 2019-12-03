@@ -1,9 +1,8 @@
 package com.example.test;
 
 
-import org.apache.commons.text.StringEscapeUtils;
-
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -88,10 +87,19 @@ public class Main {
 //        String str43 = "fsoft12&amp;&lt;a href='http://www.qq.com'&gt;QQ&lt;/a&gt;&lt;script&gt";
 //        System.out.println(StringEscapeUtils.unescapeHtml4(str43));
 //        System.out.println(StringEscapeUtils.unescapeHtml4(str));
+//        System.out.println(StringEscapeUtils.escapeHtml3(str43));
+String str = null;
+        System.out.println(str.substring(0,str.contains("-")?str.indexOf("-"):str.length()));
+
+//        String str = "zfsoft123&amp;";
+//        String str2 = "zfsoft123$";
+//        String str43 = "fsoft12&amp;&lt;a href='http://www.qq.com'&gt;QQ&lt;/a&gt;&lt;script&gt";
+//        System.out.println(StringEscapeUtils.unescapeHtml4(str43));
+//        System.out.println(StringEscapeUtils.unescapeHtml4(str));
         Scanner scan = new Scanner(System.in);
         String gogo = scan.nextLine();
         String ggf =  gogo.replace("{\\n}","\n");
-        System.out.println(StringEscapeUtils.escapeHtml3(ggf));
+//        System.out.println(StringEscapeUtils.escapeHtml3(ggf));
     }
     public static boolean isInteger(String str) {
         Pattern pattern = Pattern.compile("^[\\-|\\+]?\\d+(\\.\\d+)?$");
@@ -164,5 +172,22 @@ public class Main {
             return true;
         }
         return false;
+    }
+    public static String formatDecimal(String value, int scale) {
+        String result;
+        if (!value.matches("-?[0-9]*.[0-9]*")|| scale < 0) {
+            result = value;
+            return result;
+        }
+        BigDecimal b = new BigDecimal(value);
+        double f1 = b.setScale(scale, BigDecimal.ROUND_HALF_UP).doubleValue();
+        result = String.valueOf(f1);
+        if (scale == 0) {
+            result = String.valueOf((int) f1);
+        }
+        if(result.startsWith(".")){
+            result = "0" + result;
+        }
+        return result;
     }
 }

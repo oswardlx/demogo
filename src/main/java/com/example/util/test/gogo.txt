@@ -1,0 +1,334 @@
+/**
+	 * @description  北华航天辅修成绩单!!!!!!!
+	 * @author      刘鑫（1661）
+	 * @return      java.util.Map<java.lang.String,java.lang.String>
+	 * @Params      [dao, ids, xxmc, model, xm, os, gsdygx, photoDao]
+	 * @date        2019/11/14 17:26
+	 */
+	public Map<String,String> czxxzyjsxyBatchGetPdfScorePaper(String ids, String xxmc, FxcjzbdyModel model, ByteArrayOutputStream os) throws IOException, DocumentException {
+		Map<String, String> result = new LinkedHashMap<>();
+		int pageBigColNum = 2;               //每页列数，如果有变化，直接替换该值
+		int kcxzdmTotalWidth = 160;       //课程性质代码总宽度，如果有变化，直接替换该值
+		int minKcxzColNum = 8;            //最小课程性质位数，如果有变化，直接替换该值
+		int rowIndex = 0;                 //列宽指示
+		int maxTitleSize = 15;            //标题最大字号
+		int titleHeight = 25;             //标题行高
+		int perPageRowNum = 35;           //每页行数，如果有变化，直接替换该值
+		int headScoreHeight = 21;         //每行行高，如果有变化，直接替换该值
+		int scoreHeight = 17;             //每行行高，如果有变化，直接替换该值
+		int perColChiColNUm = 5;          //每一列的子列数，如果有变化，直接替换该值
+		int imgHeight = 85;               //照片高度，如果有变化，直接替换该值
+		int imgWidth = 75;                //照片宽度，如果有变化，直接替换该值
+		int maxSize = 9;
+		String[] arrays;
+		arrays = new String[]{"学年学期", "课程名称","性质" ,"学分", "成绩"};
+		int perSmallColNum = arrays.length;          //每一列的子列数，如果有变化，直接替换该值
+		try {
+			//统计数
+			AtomicInteger completeCount = new AtomicInteger(0);
+			//报表工具类
+			JwglxtXscjzbUtil jUtil = new JwglxtXscjzbUtil();
+			//报表组件库
+			ReportModules rCent = new ReportModules();
+
+			List<FxcjzbdyModel> xsList = new ArrayList<FxcjzbdyModel>();
+			if (!BlankUtils.isBlank(ids)) {
+				model.setZjxxidList(Arrays.asList(ids.split(",")));
+				model.setJg_id(null);
+				model.setNjdm_id(null);
+				model.setZyh_id(null);
+				model.setBh_id(null);
+				model.setXh(null);
+			}
+			model.setPageable(false);//设置成不分页
+			xsList = dao.getPagedListByScope(model);
+			//定义字体
+			BaseFont bfChinese = BaseFont.createFont((ServletActionContext.getServletContext().getRealPath("/") + "/font/Alibaba-PuHuiTi-Regular.otf").replaceAll("//", "/"), BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
+			Font headerFont = new Font(bfChinese, 15, Font.BOLD);
+			Font cellFont = new Font(bfChinese, 9, Font.NORMAL);
+			Font cellFontBlod = new Font(bfChinese, 9, Font.BOLD);
+			Font small7CellFont = new Font(bfChinese, 7, Font.NORMAL);
+			Font small6CellFont = new Font(bfChinese, 6, Font.NORMAL);
+			Font smallCellFont = new Font(bfChinese, 5, Font.NORMAL);
+			Font miniCellFont = new Font(bfChinese, 2, Font.NORMAL);
+			Font font = new Font(bfChinese, 9, Font.NORMAL);
+			//若可配置则走传入边距，如果没有则走写死边距，这边是否可配置应该是由controller传过来。而不是再查一遍。后面改成上层传个map过来  没改
+			List<String> ywlxList = new ArrayList<>();
+//			ywlxList.add("configurable");
+//			List<BaseMap> contList = dao.getBusinessControlList(ywlxList);
+//			boolean isConfigurable = false;
+//			for(BaseMap map : contList){
+//				if("1".equals(map.get("margin"))){
+//					isConfigurable = true;
+//				}
+//			}
+			float marginLeft;
+			float marginRight;
+			float marginTop;
+			float marginBottom;
+//			if(isConfigurable) {
+//				PdfDetailModel pdfDetailModel = model.getPdfDetailModel();
+//				marginLeft = pdfDetailModel.getMarginLeftOutput();
+//				marginRight = pdfDetailModel.getMarginRightOutput();
+//				marginTop = pdfDetailModel.getMarginTopOutput();
+//				marginBottom = pdfDetailModel.getMarginBottomOutput();
+//			} else {
+				marginLeft = 16;
+				marginRight = 16;
+				marginTop = 24;
+				marginBottom = 16;
+//			}
+			//生成一个PDF文档
+			Rectangle rectangle = PageSize.A4;
+			Document document = new Document(rectangle, marginLeft, marginRight, marginTop, marginBottom);
+			PdfWriter.getInstance(document, os);
+			document.open();
+			PdfPCell tempCell = null;
+			PdfPTable tempTable = null;
+//			表头宽占比参数
+			int arrSumTemp = 0;
+
+//			数据列占比参数
+			List<Integer> wdsBodyList = new ArrayList<>();
+			List<Integer> layoutBody = new ArrayList<>();
+			for (int wdsIndex = 0; wdsIndex < pageBigColNum; wdsIndex++) {
+				wdsBodyList.add(8);
+				wdsBodyList.add(26);
+				wdsBodyList.add(5);
+				wdsBodyList.add(6);
+				wdsBodyList.add(5);
+				layoutBody.add(10);
+			}
+//			List<Integer>用流的方式转int数组
+			int[] wdsBodyArr = wdsBodyList.stream().mapToInt(Integer::valueOf).toArray();
+//			三列
+			int[] wdsBodylayout = layoutBody.stream().mapToInt(Integer::valueOf).toArray();
+//			列中
+			int[] wdsBodyData = Arrays.copyOfRange(wdsBodyArr, 0, perSmallColNum);
+
+			if (!BlankUtils.isBlank(xsList) && xsList.size() > 0) {
+				//记录总数
+				BigDecimal maxCount = new BigDecimal(xsList.size());
+				for (FxcjzbdyModel xsModel : xsList) {
+					xsModel.setGsbm(model.getGsbm());
+					model.setXh_id(xsModel.getXh_id());
+					List<FxcjzbdyModel> kcxzList = new ArrayList<>();
+					kcxzList = dao.getCjdyKcxzList1();
+					//写入要统计的几种课程性质
+					ArrayList<String> kcxzdmList = new ArrayList<String>();
+					for (FxcjzbdyModel jcsjModel : kcxzList) {
+						kcxzdmList.add(jcsjModel.getDm());
+					}
+					if (xsModel != null && xsModel.getXh_id() != null && !"".equals(xsModel.getXh_id())) {
+						int pageNum = 1;         //总页数
+						int cellCount = 0;       //总格子数
+						HashMap<String, Integer> cellNummap = new HashMap<String, Integer>();                 //用来存放每页的cell数目
+						//设置课程性质信息
+						if (!BlankUtils.isBlank(model) && !BlankUtils.isBlank(model.getKcxzdmsList()) && model.getKcxzdmsList().size() > 0)
+							xsModel.setKcxzdmsList(model.getKcxzdmsList());
+						//设置成绩打印设置项信息
+						xsModel = getCjdyszx(xsModel, model);
+						List<FxcjzbdyModel> allXscjList;
+						log.debug("/↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓开始获取成绩信息↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓/");
+						allXscjList = getXscjList(xsModel,true,false);        //具体的成绩信息,第一个true代表是否有等级等级成绩,第二个true代表是否有创新学分
+						log.debug("/↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑获取成绩信息结束↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑/");
+						xsModel.setKcxzdmList(kcxzdmList);
+						log.debug("/↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓统计成绩中各课程性质学分↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓/");
+						FxcjzbdyModel kcxzxftjModel = dao.getKcxzxftj(xsModel);                  //得到课程性质学分统计信息
+						log.debug("/↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓得到教学执行计划中最低学分↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓/");
+//						FxcjzbdyModel yqdxftjModel = dao.getJxzxjgzdxf(xsModel);
+						log.debug("/↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓得到学生毕业信息↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓/");
+						FxcjzbdyModel byxxModel = dao.getXsbyxx(xsModel.getXh_id());             //毕业信息
+						log.debug("/↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓得到学位信息↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓/");
+						FxcjzbdyModel xwxxModel =dao.getXsbyxx(xsModel.getXh_id());                        //学位信息
+						log.debug("/↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓统计平均学分绩点↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓/");
+						FxcjzbdyModel pjxfjdModel = dao.getPjxfjd(xsModel);                    //历年平均绩点
+						log.debug("/↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓统计平均绩点↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓/");
+						FxcjzbdyModel pjjdModel = dao.getPjjd(xsModel);                      //平均绩点/平均学分绩点
+						log.debug("/↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓统计算数平均分↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓/");
+						FxcjzbdyModel pjfModel = dao.getCjpjf(xsModel);                         //平均分
+						//得到具体的每个单元格的信息--------------------格子生成器
+						Map<String,String> dataMap = new HashMap<>();
+//                        List<Map<String,String>> dataMapList = new ArrayList<>();
+						int keyIndex = 0;
+						dataMap.put("key"+keyIndex,"{xnxqjc}");
+						dataMap.put("hAlign"+keyIndex,String.valueOf(PdfPCell.ALIGN_CENTER));
+						dataMap.put("vAlign"+keyIndex++,String.valueOf(PdfPCell.ALIGN_MIDDLE));
+						dataMap.put("key"+keyIndex,"{kcmc}");
+						dataMap.put("hAlign"+keyIndex,String.valueOf(PdfPCell.ALIGN_LEFT));
+						dataMap.put("vAlign"+keyIndex++,String.valueOf(PdfPCell.ALIGN_MIDDLE));
+						dataMap.put("key"+keyIndex,"{kcxzjc}");
+						dataMap.put("hAlign"+keyIndex,String.valueOf(PdfPCell.ALIGN_CENTER));
+						dataMap.put("vAlign"+keyIndex++,String.valueOf(PdfPCell.ALIGN_MIDDLE));
+						dataMap.put("key" + keyIndex, "{xf}");
+						dataMap.put("hAlign" + keyIndex, String.valueOf(PdfPCell.ALIGN_CENTER));
+						dataMap.put("vAlign" + keyIndex++, String.valueOf(PdfPCell.ALIGN_MIDDLE));
+						dataMap.put("key" + keyIndex, "{cj}{cjxzbz4}");
+						dataMap.put("hAlign" + keyIndex, String.valueOf(PdfPCell.ALIGN_CENTER));
+						dataMap.put("vAlign" + keyIndex++, String.valueOf(PdfPCell.ALIGN_MIDDLE));
+
+						cellNummap.put("xmmcColNum",1);
+						//这个数字要与cj字段的下标一致
+						cellNummap.put("xmcjColNum",4);
+						List<PdfStuInfoModel> allXscjStuList = commonPcellxHPro(wdsBodyArr, perSmallColNum, perPageRowNum, pageBigColNum, allXscjList, cellNummap, dataMap);
+						List<PdfPCellx> allXscjCellList = jUtil.getCellListAdaptivePro(marginLeft + marginRight, PdfPCell.BOX, rectangle, allXscjStuList, bfChinese);
+						pageNum = cellNummap.get("pageNum");
+						int fromNum = 0;  //开始加载数
+						cellNummap.put("fromNum", 0);
+						List<PdfStuInfoModel> rowModelList = new ArrayList<PdfStuInfoModel>();
+						for (int i = 1; i <= pageNum; i++) {
+							document.newPage();
+							PdfPTable wholeTalbe = jUtil.createTable(new int[]{1},PdfPCell.NO_BORDER);
+							//标题
+							tempTable = rCent.getTitleModuleToTable(xsModel.getBtmc(), xxmc, "辅修专业学生成绩单", 25, headerFont, marginRight + marginLeft, rectangle);
+							tempCell = new PdfPCell(tempTable);
+							tempCell.setBorder(PdfPCell.NO_BORDER);
+							wholeTalbe.addCell(tempCell);
+
+
+							int[] eyeTabelArr = new int[]{120, 20};
+							int eyeTableArrSum = jUtil.getIntegerArrSum(eyeTabelArr);
+							PdfPTable eyeTable = jUtil.createTable(eyeTabelArr, 100f, PdfPCell.BOX);
+							List<PdfStuInfoModel> eyeRows = new ArrayList<PdfStuInfoModel>();
+							int[] eyeLeftArr = new int[]{10, 20, 10, 20, 10, 10, 20, 20};
+							int eyeArrSum = jUtil.getIntegerArrSum(eyeLeftArr);
+							rowIndex = 0;
+//							（{数据}，{宽占比}，{字体最大size}，{横向合并数}，{纵向和并数}，{左右对齐方式}，{上下对齐方式}，{是否启用字体自适应}）
+							eyeRows.add(jUtil.getPdfStuInfoModel("姓名", (double) eyeLeftArr[rowIndex++] / eyeTableArrSum, maxSize, headScoreHeight, 1, 1, PdfPCell.ALIGN_CENTER, PdfPCell.ALIGN_MIDDLE, false));
+							eyeRows.add(jUtil.getPdfStuInfoModel(getStr(xsModel.getXm()), (double) eyeLeftArr[rowIndex++] / eyeTableArrSum, maxSize, 1, 1, PdfPCell.ALIGN_CENTER, PdfPCell.ALIGN_MIDDLE, true));
+							eyeRows.add(jUtil.getPdfStuInfoModel("学号", (double) eyeLeftArr[rowIndex++] / eyeTableArrSum, maxSize, 1, 1, PdfPCell.ALIGN_CENTER, PdfPCell.ALIGN_MIDDLE, false));
+							eyeRows.add(jUtil.getPdfStuInfoModel(getStr(xsModel.getXh()), (double) eyeLeftArr[rowIndex++] / eyeTableArrSum, maxSize, 1, 1, PdfPCell.ALIGN_CENTER, PdfPCell.ALIGN_MIDDLE, true));
+							eyeRows.add(jUtil.getPdfStuInfoModel("性别", (double) eyeLeftArr[rowIndex++] / eyeTableArrSum, maxSize, 1, 1, PdfPCell.ALIGN_CENTER, PdfPCell.ALIGN_MIDDLE, false));
+							eyeRows.add(jUtil.getPdfStuInfoModel(getStr(xsModel.getXb()), (double) eyeLeftArr[rowIndex++] / eyeTableArrSum, maxSize, 1, 1, PdfPCell.ALIGN_CENTER, PdfPCell.ALIGN_MIDDLE, true));
+							eyeRows.add(jUtil.getPdfStuInfoModel("出生日期", (double) eyeLeftArr[rowIndex++] / eyeTableArrSum, maxSize, 1, 1, PdfPCell.ALIGN_CENTER, PdfPCell.ALIGN_MIDDLE, false));
+							eyeRows.add(jUtil.getPdfStuInfoModel(getStr(xsModel.getCsrq()), (double) eyeLeftArr[rowIndex++] / eyeTableArrSum, maxSize, 1, 1, PdfPCell.ALIGN_CENTER, PdfPCell.ALIGN_MIDDLE, true));
+							rowIndex = 0;
+							eyeRows.add(jUtil.getPdfStuInfoModel("所在院系", (double) (eyeLeftArr[rowIndex++] +eyeLeftArr[rowIndex++]+eyeLeftArr[rowIndex++])/ eyeTableArrSum, maxSize,headScoreHeight,  3, 1, PdfPCell.ALIGN_CENTER, PdfPCell.ALIGN_MIDDLE, false));
+							eyeRows.add(jUtil.getPdfStuInfoModel(getStr(xsModel.getXy()), (double) (eyeLeftArr[rowIndex++] + eyeLeftArr[rowIndex++]) / eyeTableArrSum, maxSize, 2, 1, PdfPCell.ALIGN_CENTER, PdfPCell.ALIGN_MIDDLE, true));
+							eyeRows.add(jUtil.getPdfStuInfoModel("修读辅修专业院校", (double) (eyeLeftArr[rowIndex++] +eyeLeftArr[rowIndex++]) / eyeTableArrSum, maxSize, 2, 1, PdfPCell.ALIGN_CENTER, PdfPCell.ALIGN_MIDDLE, false));
+							eyeRows.add(jUtil.getPdfStuInfoModel(getStr(xsModel.getFxxy()), (double) eyeLeftArr[rowIndex++] / eyeTableArrSum, maxSize, 1, 1, PdfPCell.ALIGN_CENTER, PdfPCell.ALIGN_MIDDLE, true));
+							rowIndex = 0;
+							eyeRows.add(jUtil.getPdfStuInfoModel("修读辅修专业名称", (double) (eyeLeftArr[rowIndex++] +eyeLeftArr[rowIndex++]+eyeLeftArr[rowIndex++]) / eyeTableArrSum, maxSize,headScoreHeight,  3, 1, PdfPCell.ALIGN_CENTER, PdfPCell.ALIGN_MIDDLE, false));
+							eyeRows.add(jUtil.getPdfStuInfoModel(getStr(xsModel.getFxzy()), (double) (eyeLeftArr[rowIndex++] + eyeLeftArr[rowIndex++]) / eyeTableArrSum, maxSize ,  2, 1, PdfPCell.ALIGN_CENTER, PdfPCell.ALIGN_MIDDLE, true));
+							eyeRows.add(jUtil.getPdfStuInfoModel("获得辅修学士学位类型", (double) (eyeLeftArr[rowIndex++] + eyeLeftArr[rowIndex++]) / eyeTableArrSum, maxSize, 2, 1, PdfPCell.ALIGN_CENTER, PdfPCell.ALIGN_MIDDLE, false));
+							eyeRows.add(jUtil.getPdfStuInfoModel(getStr(xwxxModel.getFxxwlx()), (double) eyeLeftArr[rowIndex++] / eyeTableArrSum, maxSize, 1, 1, PdfPCell.ALIGN_CENTER, PdfPCell.ALIGN_MIDDLE, true));
+							rowIndex = 0;
+							eyeRows.add(jUtil.getPdfStuInfoModel("辅修专业修读时间", (double) (eyeLeftArr[rowIndex++] +eyeLeftArr[rowIndex++]+eyeLeftArr[rowIndex++]) / eyeTableArrSum, maxSize, headScoreHeight, 3, 1, PdfPCell.ALIGN_CENTER, PdfPCell.ALIGN_MIDDLE, false));
+							String fxfzrq = byxxModel.getFxfzrq();
+							String jssj = fxfzrq!=null?"-"+(fxfzrq.substring(0,fxfzrq.contains("-")?fxfzrq.indexOf("-"):fxfzrq.length())):"";
+							eyeRows.add(jUtil.getPdfStuInfoModel(getStr(xsModel.getFxbmxnm())+jssj, (double) (eyeLeftArr[rowIndex++] + eyeLeftArr[rowIndex++]) / eyeTableArrSum, maxSize, 2, 1, PdfPCell.ALIGN_CENTER, PdfPCell.ALIGN_MIDDLE, true));
+							eyeRows.add(jUtil.getPdfStuInfoModel("辅修专业获得学分", (double) (eyeLeftArr[rowIndex++] + eyeLeftArr[rowIndex++]) / eyeTableArrSum, maxSize, 2, 1, PdfPCell.ALIGN_CENTER, PdfPCell.ALIGN_MIDDLE, false));
+							eyeRows.add(jUtil.getPdfStuInfoModel(getStr(kcxzxftjModel.getZxf()), (double) eyeLeftArr[rowIndex++] / eyeTableArrSum, maxSize, 2, 1, PdfPCell.ALIGN_CENTER, PdfPCell.ALIGN_MIDDLE, true));
+
+							tempTable = jUtil.getTableAdaptivePro(eyeLeftArr, marginRight + marginLeft, PdfPCell.BOX, rectangle, eyeRows,bfChinese);
+							tempCell = new PdfPCell(tempTable);
+							tempCell.setBorder(PdfPCell.NO_BORDER);
+							eyeTable.addCell(tempCell);
+							Image image = cxXszp(xsModel.getXh_id(),"rxhzp");
+							if(image!=null){
+								image.scaleAbsoluteHeight(imgHeight);
+								image.scaleAbsoluteWidth(imgWidth);
+								tempCell = new PdfPCellx(image);
+								tempCell.setRowspan(5);
+								tempCell.setPaddingLeft(0);
+								tempCell.setPaddingRight(0);
+								tempCell.setPaddingTop(0);
+								tempCell.setPaddingBottom(0);
+								tempCell.setHorizontalAlignment(PdfPCell.ALIGN_CENTER);
+								tempCell.setVerticalAlignment(PdfPCell.ALIGN_MIDDLE);
+								eyeTable.addCell(tempCell);
+							}else{
+								eyeTable.addCell(PrintUtil.makeCell("",1,5, PdfPCell.ALIGN_CENTER,PdfPCell.ALIGN_MIDDLE,cellFont));
+							}
+							wholeTalbe.addCell(new PdfPCell(eyeTable));
+
+//							数据块布局
+							PdfPTable dataTable = new PdfPTable(wdsBodylayout.length);
+							dataTable.setWidths(wdsBodylayout);
+							dataTable.setWidthPercentage(100f);
+							dataTable.getDefaultCell().setBorder(PdfPCell.NO_BORDER);
+							dataTable.setSpacingBefore(0);
+//							分成几块  把table 放在cell里的原因是消除table之间的间隙
+							//数据列初始化
+							PdfPTable[] dataArr = new PdfPTable[pageBigColNum];
+							//布局初始化
+							PdfPCell[] pdfPCellArr = new PdfPCell[pageBigColNum];
+							for (int x = 0; x < pageBigColNum; x++) {
+								dataArr[x] = new PdfPTable(wdsBodyData.length);
+								dataArr[x].setWidths(wdsBodyData);
+								dataArr[x].setWidthPercentage(100f);
+								dataArr[x].getDefaultCell().setBorder(PdfPCell.NO_BORDER);
+								pdfPCellArr[x] = new PdfPCellx();
+								pdfPCellArr[x].setBorder(PdfPCell.BOX);
+								pdfPCellArr[x].setPadding(0);
+							}
+							List<PdfStuInfoModel> RowModelList3 = new ArrayList<PdfStuInfoModel>();
+							//列头+成绩数据
+							List<PdfPCellx> pdfPCellxlts = jUtil.getPdfPCellxes(arrays, maxSize, 25, bfChinese, marginRight + marginLeft, rectangle);
+							tempTable = jUtil.writeDataShoot(pdfPCellxlts, perPageRowNum, pageBigColNum, scoreHeight, allXscjCellList, cellNummap, dataTable, dataArr, pdfPCellArr);
+							fromNum = cellNummap.get("fromNum");
+							tempCell = new PdfPCell(tempTable);
+							tempCell.setBorder(PdfPCell.NO_BORDER);
+							wholeTalbe.addCell(tempCell);
+
+							int[] btBodyArr = new int[]{50, 10, 20, 20};
+							arrSumTemp = jUtil.getIntegerArrSum(btBodyArr);
+							rowIndex = 0;
+							rowModelList.clear();
+							rowModelList.add(jUtil.getPdfStuInfoModel("毕业设计(论文)题目 ", (double) btBodyArr[rowIndex++] / arrSumTemp, maxSize, 1, 1, PdfPCell.ALIGN_CENTER, PdfPCell.ALIGN_MIDDLE, false));
+							rowModelList.add(jUtil.getPdfStuInfoModel("成绩", (double) btBodyArr[rowIndex++] / arrSumTemp, maxSize, 1, 1, PdfPCell.ALIGN_CENTER, PdfPCell.ALIGN_MIDDLE, false));
+							rowModelList.add(jUtil.getPdfStuInfoModel("平均分", (double) btBodyArr[rowIndex++] / arrSumTemp, maxSize, 1, 1, PdfPCell.ALIGN_CENTER, PdfPCell.ALIGN_MIDDLE, false));
+							rowModelList.add(jUtil.getPdfStuInfoModel("", (double) btBodyArr[rowIndex++] / arrSumTemp, maxSize, 1, 2, PdfPCell.ALIGN_CENTER, PdfPCell.ALIGN_MIDDLE, false));
+							rowIndex = 0;
+							rowModelList.add(jUtil.getPdfStuInfoModel(BlankUtils.isBlank(byxxModel) ? "" : getStr(byxxModel.getFxlwtm()), (double) btBodyArr[rowIndex++] / arrSumTemp, maxSize, 1, 1, PdfPCell.ALIGN_CENTER, PdfPCell.ALIGN_MIDDLE, true));
+							rowModelList.add(jUtil.getPdfStuInfoModel(BlankUtils.isBlank(byxxModel) ? "" : getStr(byxxModel.getFxlwcj()), (double) btBodyArr[rowIndex++] / arrSumTemp, maxSize, 1, 1, PdfPCell.ALIGN_CENTER, PdfPCell.ALIGN_MIDDLE, false));
+							rowModelList.add(jUtil.getPdfStuInfoModel(BlankUtils.isBlank(pjfModel) ? "" : getStr(pjfModel.getPjf()), (double) btBodyArr[rowIndex++] / arrSumTemp, maxSize, 1, 1, PdfPCell.ALIGN_CENTER, PdfPCell.ALIGN_MIDDLE, false));
+							tempTable = jUtil.getTableAdaptivePro(btBodyArr, marginRight + marginLeft, PdfPCell.BOX, rectangle, rowModelList, bfChinese);
+							tempTable.completeRow();
+							tempCell = new PdfPCell(tempTable);
+							tempCell.setBorder(PdfPCell.BOX);
+							wholeTalbe.addCell(tempCell);
+
+
+
+							//表尾
+							int[] bwbodyArr = new int[]{10, 10,10};
+							int bwbodyArrSum = jUtil.getIntegerArrSum(bwbodyArr);
+							List<PdfStuInfoModel> rowModelList5 = new ArrayList<PdfStuInfoModel>();
+							//自定义结尾行
+							if (!BlankUtils.isBlank(xsModel.getBwnr())) {
+								rowModelList5.add(jUtil.getPdfStuInfoModel(getStr(xsModel.getBwnr()), (double) bwbodyArrSum / bwbodyArrSum, maxSize,25, bwbodyArr.length, 1, PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_MIDDLE, true));
+							} else {
+								rowModelList5.add(jUtil.getPdfStuInfoModel("学院（盖章）：", (double) 10 / bwbodyArrSum, maxSize, 1, 1, PdfPCell.ALIGN_CENTER, PdfPCell.ALIGN_MIDDLE, false));
+								rowModelList5.add(jUtil.getPdfStuInfoModel("教务处(盖章)：", (double) 10 / bwbodyArrSum, maxSize, 1, 1, PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_MIDDLE, false));
+								SimpleDateFormat sf = new SimpleDateFormat("YYYY-MM-dd");
+								rowModelList5.add(jUtil.getPdfStuInfoModel("打印日期：" + sf.format(new Date()), (double) 10 / bwbodyArrSum, maxSize, 1, 1, PdfPCell.ALIGN_RIGHT, PdfPCell.ALIGN_MIDDLE, false));
+							}
+							rowModelList5.add(jUtil.getPdfStuInfoModel("注： ▲代表补考成绩 ◆代表缓考成绩 ●代表重修成绩 ★代表免修成绩", (double) bwbodyArrSum / bwbodyArrSum, maxSize, 3, 1, PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_MIDDLE, false));
+							tempTable = jUtil.getTableAdaptivePro(bwbodyArr, marginRight + marginLeft, PdfPCell.NO_BORDER, rectangle, rowModelList5, bfChinese);
+							tempCell = new PdfPCell(tempTable);
+							tempCell.setBorder(PdfPCell.NO_BORDER);
+							wholeTalbe.addCell(tempCell);
+							document.add(wholeTalbe);
+						}
+					}
+					//调用计算百分比方法，设置计算结果到session
+					PercentageUtils.setPercentage(completeCount, maxCount, BYGLConstant.SCORE_PRINT_PROCESSED_KEY);
+				}
+			} else {
+				document.newPage();
+				document.add(new Paragraph("没有成绩数据!", cellFont));
+			}
+			document.close();
+			result.put("Status", "Success");
+			result.put("Info", "");
+			return result;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			//成绩单打印处理完成，移除标识：这里防止页面突然关闭导致的未清除
+			SessionFactory.getSession().removeAttribute(BYGLConstant.SCORE_PRINT_PROCESSED_KEY);
+		}
+		return result;
+	}

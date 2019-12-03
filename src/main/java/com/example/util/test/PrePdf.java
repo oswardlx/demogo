@@ -2,19 +2,17 @@ package com.example.util.test;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.fasterxml.jackson.annotation.JsonAlias;
+import com.example.entity.PdfStuInfoModel;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.*;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.boot.jackson.JsonObjectDeserializer;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.ResourceUtils;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -139,15 +137,15 @@ public class PrePdf {
         celltemp.setFixedHeight(20);
         table.addCell(celltemp);
 
-        for(int x = 0 ;x <100 ; x++) {
-            chunk1 = new Chunk("第三方"+x, textFont);
+        for (int x = 0; x < 100; x++) {
+            chunk1 = new Chunk("第三方" + x, textFont);
             paragraph = new Paragraph();
             paragraph.add(chunk1);
             celltemp0 = new PdfPCell(paragraph);
             celltemp0.setFixedHeight(20);
             celltemp0.setHorizontalAlignment(PdfPCell.ALIGN_RIGHT);
             table.addCell(celltemp0);
-            celltemp = new PdfPCell(new Phrase("企业名称"+x, textFont));
+            celltemp = new PdfPCell(new Phrase("企业名称" + x, textFont));
             celltemp.setFixedHeight(20);
             table.addCell(celltemp);
         }
@@ -338,7 +336,7 @@ public class PrePdf {
 //        executorDeleteFile(path + parentPath + tempFilePath, 10, 2000);
 //        return parentPath + tempFilePath;
 
-        byte bWrite2 [] = os.toByteArray();
+        byte bWrite2[] = os.toByteArray();
         PdfReader reader = new PdfReader(bWrite2);
 //        writer.setEncryption("Hello".getBytes(), "World".getBytes(), PdfWriter.ALLOW_SCREENREADERS, PdfWriter.STANDARD_ENCRYPTION_128);
         PdfStamper stamper = PdfStamper.createSignature(reader, outputStream, '\0', null, true);
@@ -524,7 +522,7 @@ public class PrePdf {
 //        JSONArray colProperties = new JSONArray();
 //        JSONObject col1 = new JSONObject();
 //        col1.put("")
-        jsonObject.put("children",cellPropArr);
+        jsonObject.put("children", cellPropArr);
         return jsonObject;
     }
 
@@ -551,8 +549,8 @@ public class PrePdf {
         document.open();
         long endTime = System.currentTimeMillis();
         System.out.println("\ngetPath cost: " + Math.abs(endTime - startTime) + " (ms)");
-        PdfPTable cPageNum =  initLoop();
-        PdfPTable mountTable = (PdfPTable)(cPageNum.getRow(0).getCells()[0].getColumn().getCompositeElements().get(0));
+        PdfPTable cPageNum = initLoop();
+        PdfPTable mountTable = (PdfPTable) (cPageNum.getRow(0).getCells()[0].getColumn().getCompositeElements().get(0));
         int rows = mountTable.getRows().size();
         int cjJAMount = rows;
         int pageCount = cjJAMount / (properties.getIntValue("numRows") * properties.getIntValue("repeat"));
@@ -628,7 +626,7 @@ public class PrePdf {
         dataMap.put("dyrq", dyrq);
         JSONArray cjJA = initArray();
         dataMap.put("cjJA", cjJA);
-        dataMap.put("loopProperties",getLoopProperties());
+        dataMap.put("loopProperties", getLoopProperties());
         data = dataMap;
         properties = getLoopProperties();
         return dataMap;
@@ -639,7 +637,7 @@ public class PrePdf {
         JSONObject dataTemp;
         for (int x = 0; x < 8; x++) {
             dataTemp = new JSONObject();
-            dataTemp.put("text", "2012-2013学年 第"+x+"学期");
+            dataTemp.put("text", "2012-2013学年 第" + x + "学期");
             dataTemp.put("colSpan", 6);
             dataTemp.put("rowSpan", 1);
             dataTemp.put("horizontalAlignment", PdfPCell.ALIGN_CENTER);
@@ -647,32 +645,32 @@ public class PrePdf {
             dataJA.add(dataTemp);
             for (int y = 0; y < 6; y++) {
                 dataTemp = new JSONObject();
-                dataTemp.put("text", "课程名称" + x+""+y);
+                dataTemp.put("text", "课程名称" + x + "" + y);
                 dataTemp.put("colSpan", 1);
                 dataTemp.put("rowSpan", 1);
                 dataJA.add(dataTemp);
                 dataTemp = new JSONObject();
-                dataTemp.put("text", "性质" +  x+""+y);
+                dataTemp.put("text", "性质" + x + "" + y);
                 dataTemp.put("colSpan", 1);
                 dataTemp.put("rowSpan", 1);
                 dataJA.add(dataTemp);
                 dataTemp = new JSONObject();
-                dataTemp.put("text", "学分" + x+""+y);
+                dataTemp.put("text", "学分" + x + "" + y);
                 dataTemp.put("colSpan", 1);
                 dataTemp.put("rowSpan", 1);
                 dataJA.add(dataTemp);
                 dataTemp = new JSONObject();
-                dataTemp.put("text", "成绩" + x+""+y);
+                dataTemp.put("text", "成绩" + x + "" + y);
                 dataTemp.put("colSpan", 1);
                 dataTemp.put("rowSpan", 1);
                 dataJA.add(dataTemp);
                 dataTemp = new JSONObject();
-                dataTemp.put("text", "补考" + x+""+y);
+                dataTemp.put("text", "补考" + x + "" + y);
                 dataTemp.put("colSpan", 1);
                 dataTemp.put("rowSpan", 1);
                 dataJA.add(dataTemp);
                 dataTemp = new JSONObject();
-                dataTemp.put("text", "重修" + x+""+y);
+                dataTemp.put("text", "重修" + x + "" + y);
                 dataTemp.put("colSpan", 1);
                 dataTemp.put("rowSpan", 1);
                 dataJA.add(dataTemp);
@@ -751,11 +749,11 @@ public class PrePdf {
         int colIndex = 0;
         for (int x = 0; x < dataJA.size(); x++) {
             tempJO = dataJA.getJSONObject(x);
-            tempJO2 = cellPropArr.getJSONObject(colIndex%cols);
-            if(1==tempJO.getIntValue("colSpan")){
+            tempJO2 = cellPropArr.getJSONObject(colIndex % cols);
+            if (1 == tempJO.getIntValue("colSpan")) {
                 colIndex++;
             }
-            tempCell = getDataToCell(tempJO,tempJO2);
+            tempCell = getDataToCell(tempJO, tempJO2);
             result.add(tempCell);
         }
         return result;
@@ -777,10 +775,10 @@ public class PrePdf {
         int paddingRight = propertiesJO.getIntValue("paddingRight");
         int paddingTop = propertiesJO.getIntValue("paddingTop");
         int paddingBottom = propertiesJO.getIntValue("paddingBottom");
-        String hAlignmentStr = StringUtils.defaultIfEmpty(dataJO.getString("horizontalAlignment"),"");
-        String vAlignmentStr = StringUtils.defaultIfEmpty(dataJO.getString("verticalAlignment"),"");
-        int horizontalAlignment = hAlignmentStr.length()>0?Integer.parseInt(hAlignmentStr):propertiesJO.getIntValue("horizontalAlignment");
-        int verticalAlignment = hAlignmentStr.length()>0?Integer.parseInt(vAlignmentStr):propertiesJO.getIntValue("verticalAlignment");
+        String hAlignmentStr = StringUtils.defaultIfEmpty(dataJO.getString("horizontalAlignment"), "");
+        String vAlignmentStr = StringUtils.defaultIfEmpty(dataJO.getString("verticalAlignment"), "");
+        int horizontalAlignment = hAlignmentStr.length() > 0 ? Integer.parseInt(hAlignmentStr) : propertiesJO.getIntValue("horizontalAlignment");
+        int verticalAlignment = hAlignmentStr.length() > 0 ? Integer.parseInt(vAlignmentStr) : propertiesJO.getIntValue("verticalAlignment");
         float borderWidthLeft = propertiesJO.getFloatValue("borderWidthLeft");
         float borderWidthRight = propertiesJO.getFloatValue("borderWidthRight");
         float borderWidthTop = propertiesJO.getFloatValue("borderWidthTop");
@@ -891,7 +889,7 @@ public class PrePdf {
         result.setWidthPercentage(resultWidthRadio);
         //将数据写入
         JSONArray cjJA = initArray();
-        List<PdfPCell> list = transDataToList(cjJA,loopProperties);
+        List<PdfPCell> list = transDataToList(cjJA, loopProperties);
         int fromNum = 0;
         //写入数据格子
         for (PdfPTable pt : colTables) {
@@ -904,11 +902,11 @@ public class PrePdf {
                 break;
             }
             //补空格
-            if(pt.getRows().size() < loopProperties.getIntValue("numRows")){
+            if (pt.getRows().size() < loopProperties.getIntValue("numRows")) {
                 int append = loopProperties.getIntValue("numRows") - pt.getRows().size();
                 tempCell = new PdfPCell();
                 tempCell.setFixedHeight(loopProperties.getIntValue("cellHeight"));
-                for (int y = 0; y < append*cols; y++) {
+                for (int y = 0; y < append * cols; y++) {
                     pt.addCell(tempCell);
                 }
             }
@@ -925,6 +923,7 @@ public class PrePdf {
         result.completeRow();
         return result;
     }
+
     /**
      * @return com.itextpdf.text.pdf.PdfPTable
      * @description 初始化循环体
@@ -962,7 +961,7 @@ public class PrePdf {
         result.setWidthPercentage(resultWidthRadio);
         //将数据写入
         JSONArray cjJA = initArray();
-        List<PdfPCell> list = transDataToList(cjJA,loopProperties);
+        List<PdfPCell> list = transDataToList(cjJA, loopProperties);
         int fromNum = 0;
         //写入数据格子
         for (PdfPTable pt : colTables) {
@@ -975,11 +974,11 @@ public class PrePdf {
                 break;
             }
             //补空格
-            if(pt.getRows().size() < loopProperties.getIntValue("numRows")){
+            if (pt.getRows().size() < loopProperties.getIntValue("numRows")) {
                 int append = loopProperties.getIntValue("numRows") - pt.getRows().size();
                 tempCell = new PdfPCell();
                 tempCell.setFixedHeight(loopProperties.getIntValue("cellHeight"));
-                for (int y = 0; y < append*cols; y++) {
+                for (int y = 0; y < append * cols; y++) {
                     pt.addCell(tempCell);
                 }
             }
@@ -1005,7 +1004,7 @@ public class PrePdf {
      * @Params [perPageRowNum, pageColNum, scoreHeight, maxSize, arrays, bfChinese, marginLeftRight, rectangle, allXscjCellList, cellNummap, dataTable, dataArr, pdfPCellArr, height]
      * @date 2019/10/25 11:39
      */
-    public PdfPTable writeDataShoot(List<PdfPCell> pdfPCellxlts,int perPageRowNum, int pageColNum, int scoreHeight, List<PdfPCell> allXscjCellList, HashMap<String, Integer> cellNummap, PdfPTable dataTable, PdfPTable[] dataArr, PdfPCell[] pdfPCellArr) throws IOException, DocumentException {
+    public PdfPTable writeDataShoot(List<PdfPCell> pdfPCellxlts, int perPageRowNum, int pageColNum, int scoreHeight, List<PdfPCell> allXscjCellList, HashMap<String, Integer> cellNummap, PdfPTable dataTable, PdfPTable[] dataArr, PdfPCell[] pdfPCellArr) throws IOException, DocumentException {
         //定位
         int fromNum = cellNummap.get("fromNum");
         //写入列头
@@ -1033,6 +1032,7 @@ public class PrePdf {
         cellNummap.put("fromNum", fromNum);
         return dataTable;
     }
+
     /**
      * @return com.itextpdf.text.Chunk
      * @throws
@@ -1080,7 +1080,7 @@ public class PrePdf {
      * @date 2019/11/9 15:25
      */
     public String escapeStr(String str) {
-        String result = StringUtils.defaultIfEmpty(str,"").replace("{\\n}", "\n");
+        String result = StringUtils.defaultIfEmpty(str, "").replace("{\\n}", "\n");
         return result;
     }
 
@@ -1345,6 +1345,93 @@ public class PrePdf {
         result = BaseFont.createFont(fontName, BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED, BaseFont.NOT_CACHED,
                 st1, st1);
         return result;
+    }
 
+    /**
+     * @return java.util.List<com.zfsoft.jwglxt.bygl.dao.xscjzbdy.entities.PdfStuInfoModel>
+     * @description 公共获取格子ModelList
+     * @author 刘鑫（1661）
+     * @Params [wdsBody, perSmallColNum, perPageRowNum, pageBigColNum, allXscjList, cellNummap, gsdygx]
+     * @date 2019/10/31 15:47
+     */
+    private List<PdfStuInfoModel> commonPcellxHPro(int[] wdsBody, int numCols, int numRows, int repeat, JSONArray dataJSONArr, HashMap<String, Integer> cellNummap, String gsdygx, Map<String, String> dataMap) {
+        JwglxtXscjzbUtil jUtil = new JwglxtXscjzbUtil();
+        //减去列头
+        numRows--;
+        //最大字体大小
+        int maxSize = 9;
+        //总行数
+        int sumRow = 0;
+        //页数
+        int pageNum = 1;
+        int modTemp = 0;
+        int pageNumTemp = 0;
+        int rowIndex = 0;
+        List<PdfStuInfoModel> rowlList = new ArrayList<PdfStuInfoModel>();
+        int wdsBodySum = jUtil.getIntegerArrSum(wdsBody);
+        try {
+            if (dataJSONArr.size() > 0) {
+                for (int dJAIndex = 0; dJAIndex < dataJSONArr.size(); dJAIndex++) {
+                    JSONObject dJO = dataJSONArr.getJSONObject(dJAIndex);
+                    if (dJO != null) {
+                        if (dJO.getBoolean("isTinyTitle")) {
+                            //小标题
+                            String tinyTitle = dJO.getString("tinyTitle");
+                            int hAlign = dJO.getInteger("hAlign");
+                            int vAlign = dJO.getInteger("vAlign");
+                            boolean isAdaptive = dJO.getBoolean("isAdaptive");
+                            rowlList.add(jUtil.getPdfStuInfoModel(tinyTitle, (double) wdsBodySum / wdsBodySum, maxSize, numCols, 1, hAlign, vAlign, isAdaptive));
+                            sumRow++;
+                        } else {
+                            //成绩数据
+                            rowIndex = 0;
+                            for (int index = 0; index < numCols; index++) {
+                                String parameter = dataMap.get("key" + index);
+                                List<String> keyList = jUtil.getKeyList(parameter);
+                                if (parameter != null && parameter.length() > 2 && keyList.size() > 0) {
+                                    for (String key : keyList) {
+                                        parameter = parameter.replace("{" + key + "}", StringUtils.defaultIfEmpty(dJO.getString(key), ""));
+                                    }
+                                }
+                                int hAlign = Integer.parseInt(dataMap.get("hAlign" + index));
+                                int vAlign = Integer.parseInt(dataMap.get("vAlign" + index));
+                                rowlList.add(jUtil.getPdfStuInfoModel(parameter, (double) wdsBody[rowIndex++] / wdsBodySum, maxSize, 1, 1, hAlign, vAlign, true));
+                            }
+                            sumRow++;
+                        }
+                    }
+                }
+                modTemp = sumRow % (numRows * repeat);
+                pageNumTemp = sumRow / (numRows * repeat);
+                pageNum = modTemp == 0 ? pageNumTemp : pageNumTemp + 1;
+                //补空格
+                if (pageNum * numRows * repeat > sumRow) {
+                    for (int index = 0; index < pageNum * numRows * repeat - modTemp; index++) {
+                        for (int blankIndex = 0; blankIndex < numCols; blankIndex++) {
+                            rowlList.add(jUtil.getPdfStuInfoModel("", (double) wdsBody[0] / wdsBodySum, maxSize, 1, 1, PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_MIDDLE, true));
+                        }
+                        sumRow++;
+                    }
+                }
+            } else {
+                //补空格
+                if (pageNum * numRows * repeat > sumRow) {
+                    for (int index = 0; index < pageNum * numRows * repeat - modTemp; index++) {
+                        for (int blankIndex = 0; blankIndex < numCols; blankIndex++) {
+                            rowlList.add(jUtil.getPdfStuInfoModel("", (double) wdsBody[0] / wdsBodySum, maxSize, 1, 1, PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_MIDDLE, true));
+                        }
+                        sumRow++;
+                    }
+                }
+            }
+            //返回总共多少行
+            cellNummap.put("sumRow", sumRow);
+            //返回对少页
+            cellNummap.put("pageNum", pageNum);
+            return rowlList;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return rowlList;
     }
 }
