@@ -371,10 +371,10 @@ public class PrePdf {
         JSONObject tempJO;
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("repeat", 3);
-        jsonObject.put("rows", 24);
+        jsonObject.put("numRows", 24);
         jsonObject.put("resultWidthRadio", 100f);
         jsonObject.put("hasHead", true);
-        jsonObject.put("cols", 6);
+        jsonObject.put("numCols", 6);
         jsonObject.put("fontSize", 8);
         jsonObject.put("cellHeight", 13
         );
@@ -524,7 +524,7 @@ public class PrePdf {
 //        JSONArray colProperties = new JSONArray();
 //        JSONObject col1 = new JSONObject();
 //        col1.put("")
-        jsonObject.put("cellPropArr",cellPropArr);
+        jsonObject.put("children",cellPropArr);
         return jsonObject;
     }
 
@@ -555,8 +555,8 @@ public class PrePdf {
         PdfPTable mountTable = (PdfPTable)(cPageNum.getRow(0).getCells()[0].getColumn().getCompositeElements().get(0));
         int rows = mountTable.getRows().size();
         int cjJAMount = rows;
-        int pageCount = cjJAMount / (properties.getIntValue("rows") * properties.getIntValue("repeat"));
-        int pageResidue = cjJAMount % (properties.getIntValue("rows") * properties.getIntValue("repeat"));
+        int pageCount = cjJAMount / (properties.getIntValue("numRows") * properties.getIntValue("repeat"));
+        int pageResidue = cjJAMount % (properties.getIntValue("numRows") * properties.getIntValue("repeat"));
         int pageNum = pageResidue > 0 ? pageCount + 1 : (pageCount > 0 ? pageCount : 1);
         for (int x = 0; x < pageNum; x++) {
             document.newPage();
@@ -745,8 +745,8 @@ public class PrePdf {
         PdfPCell tempCell;
         Chunk tempChunk;
         Paragraph tempParagraph;
-        int cols = propertiesJO.getIntValue("cols");
-        JSONArray cellPropArr = propertiesJO.getJSONArray("cellPropArr");
+        int cols = propertiesJO.getIntValue("numCols");
+        JSONArray cellPropArr = propertiesJO.getJSONArray("children");
         //用于区分规则与不规则的单元格
         int colIndex = 0;
         for (int x = 0; x < dataJA.size(); x++) {
@@ -846,6 +846,9 @@ public class PrePdf {
             case "Loop":
                 result = initLoop();
                 break;
+            case "List":
+                result = initList(jsonObject);
+                break;
             default:
                 result = null;
 
@@ -860,6 +863,75 @@ public class PrePdf {
      * @Params [jsonObject]
      * @date 2019/11/13 19:49
      */
+    public PdfPTable initList(JSONObject jsonObject) throws IOException, DocumentException {
+        JSONObject loopProperties = jsonObject;
+        PdfPCell tempCell;
+        int repeat = loopProperties.getIntValue("repeat");
+        PdfPTable tempTable;
+        //构造分列Table参数
+        JSONArray colsRadioArr = loopProperties.getJSONArray("colsRadioArr");
+        int cols = loopProperties.getIntValue("numCols");
+        float[] colsArr = new float[cols];
+        int colsRadioArrSize = colsRadioArr.size();
+        for (int x = 0; x < colsRadioArrSize; x++) {
+            colsArr[x] = colsRadioArr.getFloatValue(x);
+        }
+        PdfPTable[] colTables = new PdfPTable[repeat];
+        //构造结果Table
+        float resultWidthRadio = 100f;
+        float[] resultArr = new float[repeat];
+
+        for (int x = 0; x < repeat; x++) {
+            resultArr[x] = 1;
+            //初始化分列Table
+            tempTable = new PdfPTable(colsArr);
+            colTables[x] = tempTable;
+        }
+        PdfPTable result = new PdfPTable(resultArr);
+        result.setWidthPercentage(resultWidthRadio);
+        //将数据写入
+        JSONArray cjJA = initArray();
+        List<PdfPCell> list = transDataToList(cjJA,loopProperties);
+        int fromNum = 0;
+        //写入数据格子
+        for (PdfPTable pt : colTables) {
+            for (int x = fromNum; x < list.size(); x++) {
+                if (pt.getRows().size() < loopProperties.getIntValue("numRows")) {
+                    pt.addCell(list.get(x));
+                    continue;
+                }
+                fromNum = x;
+                break;
+            }
+            //补空格
+            if(pt.getRows().size() < loopProperties.getIntValue("numRows")){
+                int append = loopProperties.getIntValue("numRows") - pt.getRows().size();
+                tempCell = new PdfPCell();
+                tempCell.setFixedHeight(loopProperties.getIntValue("cellHeight"));
+                for (int y = 0; y < append*cols; y++) {
+                    pt.addCell(tempCell);
+                }
+            }
+            pt.completeRow();
+        }
+        //todo 将分列table合入结果Talbe
+        for (int x = 0; x < colTables.length; x++) {
+            tempCell = new PdfPCell(colTables[x]);
+//            tempCell.setFixedHeight(100);
+            result.addCell(tempCell);
+        }
+        result.setSpacingBefore(0);
+        result.getDefaultCell().setBorder(PdfPCell.BOX);
+        result.completeRow();
+        return result;
+    }
+    /**
+     * @return com.itextpdf.text.pdf.PdfPTable
+     * @description 初始化循环体
+     * @author 刘鑫（1661）
+     * @Params [jsonObject]
+     * @date 2019/11/13 19:49
+     */
     public PdfPTable initLoop() throws IOException, DocumentException {
         JSONObject loopProperties = getLoopProperties();
         PdfPCell tempCell;
@@ -867,7 +939,7 @@ public class PrePdf {
         PdfPTable tempTable;
         //构造分列Table参数
         JSONArray colsRadioArr = loopProperties.getJSONArray("colsRadioArr");
-        int cols = loopProperties.getIntValue("cols");
+        int cols = loopProperties.getIntValue("numCols");
         float repeatWidthRadio = loopProperties.getFloatValue("repeatWidthRadio");
         float[] colsArr = new float[cols];
         int colsRadioArrSize = colsRadioArr.size();
@@ -895,7 +967,7 @@ public class PrePdf {
         //写入数据格子
         for (PdfPTable pt : colTables) {
             for (int x = fromNum; x < list.size(); x++) {
-                if (pt.getRows().size() < loopProperties.getIntValue("rows")) {
+                if (pt.getRows().size() < loopProperties.getIntValue("numRows")) {
                     pt.addCell(list.get(x));
                     continue;
                 }
@@ -903,8 +975,8 @@ public class PrePdf {
                 break;
             }
             //补空格
-            if(pt.getRows().size() < loopProperties.getIntValue("rows")){
-                int append = loopProperties.getIntValue("rows") - pt.getRows().size();
+            if(pt.getRows().size() < loopProperties.getIntValue("numRows")){
+                int append = loopProperties.getIntValue("numRows") - pt.getRows().size();
                 tempCell = new PdfPCell();
                 tempCell.setFixedHeight(loopProperties.getIntValue("cellHeight"));
                 for (int y = 0; y < append*cols; y++) {
@@ -923,20 +995,6 @@ public class PrePdf {
         result.getDefaultCell().setBorder(PdfPCell.BOX);
         result.completeRow();
         return result;
-
-
-//        ArrayList<Element> elements = parseChildren(jsonObject.getJSONArray("children"));
-//        for (Element element : elements) {
-////            result.addCell(element);
-//            if (element instanceof PdfPCell) {
-//                result.addCell((PdfPCell) element);
-//            } else if (element instanceof PdfPTable) {
-//                result.addCell((PdfPTable) element);
-//            }
-//        }
-//        result.setSpacingBefore(0);
-//        result.getDefaultCell().setBorder(PdfPCell.BOX);
-//        result.completeRow();
     }
 
 
