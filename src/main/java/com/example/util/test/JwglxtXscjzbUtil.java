@@ -3,6 +3,7 @@ package com.example.util.test;
 import com.example.entity.PdfStuInfoModel;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.*;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -19,6 +20,7 @@ import java.util.concurrent.Executors;
  *
  * @author jiangyy
  */
+@Service
 public class JwglxtXscjzbUtil {
     /**
      * @return com.itextpdf.text.Font

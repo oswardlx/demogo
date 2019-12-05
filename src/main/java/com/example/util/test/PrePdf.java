@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ClassUtils;
 
+import javax.annotation.Resource;
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -22,6 +23,8 @@ public class PrePdf {
     public static JSONObject data;
     public static JSONObject properties;
     public static BaseFont BFCHINESE;
+    @Resource
+    JwglxtXscjzbUtil jUtil;
 
     static {
         try {
@@ -528,6 +531,111 @@ public class PrePdf {
 
 
     /**
+     * @return com.alibaba.fastjson.JSONObject
+     * @description 后台模拟循环体参数
+     * @author 刘鑫（1661）
+     * @Params []
+     * @date 2019/11/13 22:53
+     */
+    public JSONObject getLoopProperties2() {
+        JSONObject tempJO;
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("repeat", 3);
+        jsonObject.put("numRows", 24);
+        jsonObject.put("headed", 1);
+//        jsonObject.put("resultWidthRadio", 100f);
+        jsonObject.put("hasHead", true);
+        jsonObject.put("numCols", 6);
+        jsonObject.put("fontSize", 8);
+        jsonObject.put("cellHeight", 13);
+        JSONArray colsRadioArr = new JSONArray();
+        colsRadioArr.add(40);
+        colsRadioArr.add(10);
+        colsRadioArr.add(10);
+        colsRadioArr.add(10);
+        colsRadioArr.add(10);
+        colsRadioArr.add(10);
+        JSONArray colsHeadArr = new JSONArray();
+        colsHeadArr.add("课   程\n名  称");
+        colsHeadArr.add("课程\n性质");
+        colsHeadArr.add("学\n分");
+        colsHeadArr.add("成\n绩");
+        colsHeadArr.add("补\n考");
+        colsHeadArr.add("重\n修");
+        jsonObject.put("colsRadioArr", colsRadioArr);
+        jsonObject.put("colsHeadArr", colsHeadArr);
+        jsonObject.put("headFontSize", 10);
+        jsonObject.put("repeatWidthRadio", 100f);
+//        jsonObject.put("head1", "课   程\n名  称");
+//        jsonObject.put("head2", "课程\n性质");
+//        jsonObject.put("head3", "学\n分");
+//        jsonObject.put("head4", "成\n绩");
+//        jsonObject.put("head5", "补\n考");
+//        jsonObject.put("head6", "重\n修");
+//        jsonObject.put("headFontSize", "10");
+//        jsonObject.put("headFontStyle", "10");
+//        jsonObject.put("borderWidthLeft", "0.5");
+//        jsonObject.put("borderWidthRight", "0.5");
+//        jsonObject.put("borderWidthTop", "0.5");
+//        jsonObject.put("borderWidthBottom", "0.5");
+        //1
+        JSONArray cellPropArr = new JSONArray();
+        tempJO = new JSONObject();
+        tempJO.put("hAlign", PdfPCell.ALIGN_LEFT);
+        tempJO.put("vAlign", PdfPCell.ALIGN_MIDDLE);
+        tempJO.put("fontSize", 8);
+        tempJO.put("key", "{kcmc}");
+        tempJO.put("isAdaptive", true);
+        cellPropArr.add(tempJO);
+        //2
+        tempJO = new JSONObject();
+        tempJO.put("hAlign", PdfPCell.ALIGN_CENTER);
+        tempJO.put("vAlign", PdfPCell.ALIGN_MIDDLE);
+        tempJO.put("isAdaptive", true);
+        tempJO.put("key", "{kcxzjc}");
+        tempJO.put("fontSize", 8);
+        cellPropArr.add(tempJO);
+        //3
+        tempJO = new JSONObject();
+        tempJO.put("hAlign", PdfPCell.ALIGN_CENTER);
+        tempJO.put("vAlign", PdfPCell.ALIGN_MIDDLE);
+        tempJO.put("isAdaptive", true);
+        tempJO.put("key", "{xf}");
+        tempJO.put("fontSize", 8);
+        cellPropArr.add(tempJO);
+        //4
+        tempJO = new JSONObject();
+        tempJO.put("hAlign", PdfPCell.ALIGN_CENTER);
+        tempJO.put("vAlign", PdfPCell.ALIGN_MIDDLE);
+        tempJO.put("fontSize", 8);
+        tempJO.put("isAdaptive", true);
+        tempJO.put("key", "{cj}");
+        cellPropArr.add(tempJO);
+        //5
+        tempJO = new JSONObject();
+        tempJO.put("hAlign", PdfPCell.ALIGN_CENTER);
+        tempJO.put("vAlign", PdfPCell.ALIGN_MIDDLE);
+        tempJO.put("fontSize", 8);
+        tempJO.put("isAdaptive", true);
+        tempJO.put("key", "{mbkcj}");
+        cellPropArr.add(tempJO);
+        //6
+        tempJO = new JSONObject();
+        tempJO.put("hAlign", PdfPCell.ALIGN_CENTER);
+        tempJO.put("vAlign", PdfPCell.ALIGN_MIDDLE);
+        tempJO.put("fontSize", 8);
+        tempJO.put("key", "{mcxcj}");
+        tempJO.put("isAdaptive", true);
+        cellPropArr.add(tempJO);
+
+//        JSONArray colProperties = new JSONArray();
+//        JSONObject col1 = new JSONObject();
+//        col1.put("")
+        jsonObject.put("children", cellPropArr);
+        return jsonObject;
+    }
+
+    /**
      * @return java.lang.String
      * @throws
      * @description 解析器入口
@@ -679,6 +787,32 @@ public class PrePdf {
         return dataJA;
     }
 
+
+    public JSONArray initArray2() {
+        JSONArray dataJA = new JSONArray();
+        JSONObject dataTemp;
+        for (int x = 0; x < 8; x++) {
+            dataTemp = new JSONObject();
+            dataTemp.put("tinyTitle", "2012-2013学年 第" + x + "学期");
+            dataTemp.put("isTinyTitle", true);
+            dataTemp.put("horizontalAlignment", PdfPCell.ALIGN_CENTER);
+            dataTemp.put("verticalAlignment", PdfPCell.ALIGN_MIDDLE);
+            dataTemp.put("isAdaptive", true);
+            dataJA.add(dataTemp);
+            for (int y = 0; y < 6; y++) {
+                dataTemp = new JSONObject();
+                dataTemp.put("isTinyTitle", false);
+                dataTemp.put("kcmc", "课程名称" + x + "" + y);
+                dataTemp.put("kcxzjc", "性质" + x + "" + y);
+                dataTemp.put("xf", "学分" + x + "" + y);
+                dataTemp.put("cj", "成绩" + x + "" + y);
+                dataTemp.put("mbkcj", "补考" + x + "" + y);
+                dataTemp.put("mcxcj", "重修" + x + "" + y);
+                dataJA.add(dataTemp);
+            }
+        }
+        return dataJA;
+    }
     /**
      * @return java.util.ArrayList<com.itextpdf.text.Element>
      * @description 开始解析
@@ -862,18 +996,21 @@ public class PrePdf {
      * @date 2019/11/13 19:49
      */
     public PdfPTable initList(JSONObject jsonObject) throws IOException, DocumentException {
+//        JSONObject loopProperties = getLoopProperties2();
         JSONObject loopProperties = jsonObject;
         PdfPCell tempCell;
         int repeat = loopProperties.getIntValue("repeat");
+        int headed = loopProperties.getIntValue("headed");
         PdfPTable tempTable;
         //构造分列Table参数
         JSONArray colsRadioArr = loopProperties.getJSONArray("colsRadioArr");
-        int cols = loopProperties.getIntValue("numCols");
-        float[] colsArr = new float[cols];
-        int colsRadioArrSize = colsRadioArr.size();
-        for (int x = 0; x < colsRadioArrSize; x++) {
-            colsArr[x] = colsRadioArr.getFloatValue(x);
-        }
+        JSONArray colsHeadArr = loopProperties.getJSONArray("colsHeadArr");
+        int headFontSize = loopProperties.getIntValue("headFontSize");
+        int numCols = loopProperties.getIntValue("numCols");
+        int numRows = loopProperties.getIntValue("numRows");
+        int cellHeight = loopProperties.getIntValue("cellHeight");
+        int[] colsArr = transJAToIntArr(colsRadioArr);
+        String[] headArr = transJAToStrArr(colsHeadArr);
         PdfPTable[] colTables = new PdfPTable[repeat];
         //构造结果Table
         float resultWidthRadio = 100f;
@@ -881,49 +1018,113 @@ public class PrePdf {
 
         for (int x = 0; x < repeat; x++) {
             resultArr[x] = 1;
-            //初始化分列Table
-            tempTable = new PdfPTable(colsArr);
-            colTables[x] = tempTable;
+//            //初始化分列Table
+//            tempTable = new PdfPTable(numCols);
+//            tempTable.setWidths(colsArr);
+//            colTables[x] = tempTable;
         }
-        PdfPTable result = new PdfPTable(resultArr);
-        result.setWidthPercentage(resultWidthRadio);
+//        PdfPTable result = new PdfPTable(resultArr);
+//        result.setWidthPercentage(resultWidthRadio);
+
+//        数据块布局
+        PdfPTable dataTable = new PdfPTable(resultArr.length);
+        dataTable.setWidths(resultArr);
+        dataTable.setWidthPercentage(100f);
+        dataTable.getDefaultCell().setBorder(PdfPCell.NO_BORDER);
+        dataTable.setSpacingBefore(0);
+//							分成几块  把table 放在cell里的原因是消除table之间的间隙
+        //数据列初始化
+        PdfPTable[] dataArr = new PdfPTable[repeat];
+        //布局初始化
+        PdfPCell[] pdfPCellArr = new PdfPCell[repeat];
+        for (int x = 0; x < repeat; x++) {
+            dataArr[x] = new PdfPTable(numCols);
+            dataArr[x].setWidths(colsArr);
+            dataArr[x].setWidthPercentage(100f);
+            dataArr[x].getDefaultCell().setBorder(PdfPCell.NO_BORDER);
+            pdfPCellArr[x] = new PdfPCell();
+            pdfPCellArr[x].setBorder(PdfPCell.BOX);
+            pdfPCellArr[x].setPadding(0);
+        }
+
+
         //将数据写入
-        JSONArray cjJA = initArray();
-        List<PdfPCell> list = transDataToList(cjJA, loopProperties);
-        int fromNum = 0;
-        //写入数据格子
-        for (PdfPTable pt : colTables) {
-            for (int x = fromNum; x < list.size(); x++) {
-                if (pt.getRows().size() < loopProperties.getIntValue("numRows")) {
-                    pt.addCell(list.get(x));
-                    continue;
-                }
-                fromNum = x;
-                break;
-            }
-            //补空格
-            if (pt.getRows().size() < loopProperties.getIntValue("numRows")) {
-                int append = loopProperties.getIntValue("numRows") - pt.getRows().size();
-                tempCell = new PdfPCell();
-                tempCell.setFixedHeight(loopProperties.getIntValue("cellHeight"));
-                for (int y = 0; y < append * cols; y++) {
-                    pt.addCell(tempCell);
-                }
-            }
-            pt.completeRow();
+        JSONArray cjJA = initArray2();
+        HashMap<String,Integer> cellMap = new HashMap<>();
+        cellMap.put("fromNum",0);
+        List<PdfStuInfoModel> list = commonPcellxHPro(colsArr,numCols,numRows,repeat,cjJA,cellMap,"1111" ,loopProperties.getJSONArray("children"));
+        List<PdfPCell> allXscjCellList = jUtil.getCellListAdaptivePro(32, PdfPCell.BOX, PageSize.A4.rotate(), list, BFCHINESE);
+        //列头+成绩数据
+
+        List<PdfPCell> pdfPCellList = new ArrayList<>();
+        if(1 == headed){
+        pdfPCellList = jUtil.getPdfPCelles(headArr, headFontSize, 25, BFCHINESE, 32, PageSize.A4.rotate());
         }
-        //todo 将分列table合入结果Talbe
-        for (int x = 0; x < colTables.length; x++) {
-            tempCell = new PdfPCell(colTables[x]);
-//            tempCell.setFixedHeight(100);
-            result.addCell(tempCell);
+        tempTable = jUtil.writeDataShoot(pdfPCellList, numRows, repeat, cellHeight, allXscjCellList, cellMap, dataTable, dataArr, pdfPCellArr);
+
+//        int fromNum = 0;
+//        //写入数据格子
+//        for (PdfPTable pt : colTables) {
+//            for (int x = fromNum; x < list.size(); x++) {
+//                if (pt.getRows().size() < loopProperties.getIntValue("numRows")) {
+//                    pt.addCell(list.get(x));
+//                    continue;
+//                }
+//                fromNum = x;
+//                break;
+//            }
+//            //补空格
+//            if (pt.getRows().size() < loopProperties.getIntValue("numRows")) {
+//                int append = loopProperties.getIntValue("numRows") - pt.getRows().size();
+//                tempCell = new PdfPCell();
+//                tempCell.setFixedHeight(loopProperties.getIntValue("cellHeight"));
+//                for (int y = 0; y < append * cols; y++) {
+//                    pt.addCell(tempCell);
+//                }
+//            }
+//            pt.completeRow();
+//        }
+//        //todo 将分列table合入结果Talbe
+//        for (int x = 0; x < colTables.length; x++) {
+//            tempCell = new PdfPCell(colTables[x]);
+////            tempCell.setFixedHeight(100);
+//            result.addCell(tempCell);
+//        }
+        tempTable.setSpacingBefore(0);
+        tempTable.getDefaultCell().setBorder(PdfPCell.BOX);
+        tempTable.completeRow();
+        return tempTable;
+    }
+    /**
+     *@description  JSONArray 转 int[]
+     *@author       lx
+     *@params       [ja]
+     *@return       int[]
+     *@exception
+     *@date         2019-12-05 21:05
+     */
+    public int[] transJAToIntArr(JSONArray ja){
+        int[] result = new int[ja.size()];
+        for (int x = 0; x < ja.size(); x++) {
+            result[x] = ja.getInteger(x);
         }
-        result.setSpacingBefore(0);
-        result.getDefaultCell().setBorder(PdfPCell.BOX);
-        result.completeRow();
         return result;
     }
-
+    /**
+     *@description  JSONArray 转 int[]
+     *@author       lx
+     *@params       [ja]
+     *@return       int[]
+     *@exception
+     *@date         2019-12-05 21:05
+     */
+    public String[] transJAToStrArr(JSONArray ja){
+        String[] result = new String[ja.size()];
+        for (int x = 0; x < ja.size(); x++) {
+            result[x] = ja.getString(x);
+        }
+        return result;
+    }
     /**
      * @return com.itextpdf.text.pdf.PdfPTable
      * @description 初始化循环体
@@ -1354,7 +1555,7 @@ public class PrePdf {
      * @Params [wdsBody, perSmallColNum, perPageRowNum, pageBigColNum, allXscjList, cellNummap, gsdygx]
      * @date 2019/10/31 15:47
      */
-    private List<PdfStuInfoModel> commonPcellxHPro(int[] wdsBody, int numCols, int numRows, int repeat, JSONArray dataJSONArr, HashMap<String, Integer> cellNummap, String gsdygx, Map<String, String> dataMap) {
+    private List<PdfStuInfoModel> commonPcellxHPro(int[] wdsBody, int numCols, int numRows, int repeat, JSONArray dataJSONArr, HashMap<String, Integer> cellNummap, String gsdygx, JSONArray  colPropArr) {
         JwglxtXscjzbUtil jUtil = new JwglxtXscjzbUtil();
         //减去列头
         numRows--;
@@ -1377,25 +1578,28 @@ public class PrePdf {
                         if (dJO.getBoolean("isTinyTitle")) {
                             //小标题
                             String tinyTitle = dJO.getString("tinyTitle");
-                            int hAlign = dJO.getInteger("hAlign");
-                            int vAlign = dJO.getInteger("vAlign");
+                            int hAlign = dJO.getInteger("horizontalAlignment");
+                            int vAlign = dJO.getInteger("verticalAlignment");
                             boolean isAdaptive = dJO.getBoolean("isAdaptive");
+
                             rowlList.add(jUtil.getPdfStuInfoModel(tinyTitle, (double) wdsBodySum / wdsBodySum, maxSize, numCols, 1, hAlign, vAlign, isAdaptive));
                             sumRow++;
                         } else {
                             //成绩数据
                             rowIndex = 0;
                             for (int index = 0; index < numCols; index++) {
-                                String parameter = dataMap.get("key" + index);
+                                JSONObject jOP = colPropArr.getJSONObject(index);
+                                String parameter = jOP.getString("parameter");
                                 List<String> keyList = jUtil.getKeyList(parameter);
                                 if (parameter != null && parameter.length() > 2 && keyList.size() > 0) {
                                     for (String key : keyList) {
                                         parameter = parameter.replace("{" + key + "}", StringUtils.defaultIfEmpty(dJO.getString(key), ""));
                                     }
                                 }
-                                int hAlign = Integer.parseInt(dataMap.get("hAlign" + index));
-                                int vAlign = Integer.parseInt(dataMap.get("vAlign" + index));
-                                rowlList.add(jUtil.getPdfStuInfoModel(parameter, (double) wdsBody[rowIndex++] / wdsBodySum, maxSize, 1, 1, hAlign, vAlign, true));
+                                int hAlign = jOP.getInteger("horizontalAlignment");
+                                int vAlign = jOP.getInteger("verticalAlignment");
+                                boolean isAdaptive = jOP.getBoolean("isAdaptive");
+                                rowlList.add(jUtil.getPdfStuInfoModel(parameter, (double) wdsBody[rowIndex++] / wdsBodySum, maxSize, 1, 1, hAlign, vAlign, isAdaptive));
                             }
                             sumRow++;
                         }
