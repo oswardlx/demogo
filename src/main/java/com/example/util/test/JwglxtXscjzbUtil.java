@@ -3,7 +3,6 @@ package com.example.util.test;
 import com.example.entity.PdfStuInfoModel;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.*;
-import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -33,7 +32,6 @@ public class JwglxtXscjzbUtil {
         Font font = setFontRatioCN(ratio, length, maxSize, bfChinese);
         return font;
     }
-
 
 
     /**
@@ -78,7 +76,6 @@ public class JwglxtXscjzbUtil {
             return 0;
         }
     }
-
 
 
     /**
@@ -133,9 +130,9 @@ public class JwglxtXscjzbUtil {
     /**
      * @创建人:liuxin
      * @描述: 获取字号，与纸张大小的换算参数，字号*unit = 在纸上的大小。限于A4
-     * @see    PageSize
      * @创建日期: 20:21 2019/6/3
      * @参数：
+     * @see PageSize
      */
     private double getUnit(boolean verticalVersion) {
         double unit;
@@ -150,9 +147,9 @@ public class JwglxtXscjzbUtil {
     /**
      * @创建人:liuxin
      * @描述: 获取英文字号，与纸张大小的换算参数，字号*unit = 在纸上的大小。限于A4
-     * @see    PageSize
      * @创建日期: 20:21 2019/6/3
      * @参数：
+     * @see PageSize
      */
     private double getUnitEn(boolean verticalVersion) {
         double unit;
@@ -210,7 +207,6 @@ public class JwglxtXscjzbUtil {
         Font cellFont = new Font(bfChinese, resultSize, Font.NORMAL);
         return cellFont;
     }
-
 
 
     /**
@@ -367,7 +363,10 @@ public class JwglxtXscjzbUtil {
         return resultSize;
     }
 
-
+    public PdfPCell getBorderedCell(PdfPCell cell, int border) {
+        cell.setBorder(border);
+        return cell;
+    }//新建需加
 
 
     /**
@@ -399,6 +398,7 @@ public class JwglxtXscjzbUtil {
         }
         return result;
     }
+
     /**
      * 构造一个自定义的cell<br/>
      * 由于使用PdfPCellx无法合并行,所以此方法中一些属性无法使用.
@@ -406,23 +406,22 @@ public class JwglxtXscjzbUtil {
      * @param content 单元格内容
      * @param colspan 合并列
      * @param rowspan 合并行 (deprecated)
-     * @param align 横向对齐
-     * @param valign 纵向对齐
-     * @param font 单元格字体
+     * @param align   横向对齐
+     * @param valign  纵向对齐
+     * @param font    单元格字体
      * @return 生成的单元格
-     *
      */
     public static PdfPCell makeCell(String content, int colspan, int rowspan, int align, int valign, Font font) {
         PdfPCell cell = null;
-        Paragraph paragraph =null;
+        Paragraph paragraph = null;
         //使用自定义字体
         paragraph = new Paragraph(content, font);
         cell = new PdfPCell(paragraph);
         //设置colspan,同样的方法可以设置rowspan
-        if(colspan > 1){
+        if (colspan > 1) {
             cell.setColspan(colspan);
         }
-        if(rowspan > 1) {
+        if (rowspan > 1) {
             cell.setRowspan(rowspan);
         }
         //设置对齐
@@ -431,14 +430,15 @@ public class JwglxtXscjzbUtil {
         cell.setMinimumHeight(15);
         return cell;
     }
+
     /**
+     * @return void
      * @description 水印加透明度参数
-     * @author      刘鑫（1661）
-     * @return      void
-     * @Params      [imageFilePath, inputFile, outputFile, absoluteX, absoluteY, percent]
-     * @date        2019/9/12 9:40
+     * @author 刘鑫（1661）
+     * @Params [imageFilePath, inputFile, outputFile, absoluteX, absoluteY, percent]
+     * @date 2019/9/12 9:40
      */
-    public  void addSeal(String imageFilePath,String inputFile, String outputFile,float absoluteX, float absoluteY,float percent, float ca) {
+    public void addSeal(String imageFilePath, String inputFile, String outputFile, float absoluteX, float absoluteY, float percent, float ca) {
         try {
             PdfReader reader = new PdfReader(inputFile);
             PdfStamper stamper = new PdfStamper(reader, new FileOutputStream(outputFile));
@@ -459,17 +459,12 @@ public class JwglxtXscjzbUtil {
             }
             stamper.close();
             reader.close();
-            executorDeleteFile(inputFile,10,5000);
+            executorDeleteFile(inputFile, 10, 5000);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-
-
-
-
-   
 
     /**
      * @return com.itextpdf.text.pdf.PdfPTable
@@ -562,7 +557,8 @@ public class JwglxtXscjzbUtil {
                 }
                 cellFont = new Font(bfChinese, fontSize, Font.NORMAL);
             } else if (!pModel.isAdaptive() && pModel.getFont() != null) {
-                cellFont = new Font(bfChinese, pModel.getFont().getSize(), pModel.getFont().getStyle());;
+                cellFont = new Font(bfChinese, pModel.getFont().getSize(), pModel.getFont().getStyle());
+                ;
             } else if (!pModel.isAdaptive() && pModel.getFont() == null) {
                 cellFont = new Font(bfChinese, pModel.getMaxSize(), Font.NORMAL);
             }
@@ -582,7 +578,6 @@ public class JwglxtXscjzbUtil {
         }
         return result;
     }
-
 
 
     /**
@@ -621,7 +616,6 @@ public class JwglxtXscjzbUtil {
         }
         return PdfPCelles;
     }
-
 
 
     /**
@@ -684,11 +678,11 @@ public class JwglxtXscjzbUtil {
             PdfPCell PdfPCell;
             String mc;
             //字体
-            Font cellFont = new Font(bfChinese,9,Font.NORMAL);
+            Font cellFont = new Font(bfChinese, 9, Font.NORMAL);
             int fontSize = 9;
             for (PdfStuInfoModel pModel : pdfStuInfoModels) {
                 mc = pModel.getItemInfo();
-              //处理字体样式和大小自适应的关系   自适应且提供固定字体
+                //处理字体样式和大小自适应的关系   自适应且提供固定字体
                 if (pModel.isAdaptive() && pModel.getFont() != null) {
                     fontSize = getRatioFontSizePro(pModel.getRatio(), mc, pModel.getMaxSize(), pageSize, sumMarginLeftRight, bfChinese.getPostscriptFontName());
                     if (pModel.getMinSize() > 0 && fontSize <= pModel.getMinSize()) {
@@ -696,7 +690,7 @@ public class JwglxtXscjzbUtil {
                     } else if (fontSize <= 6) {
                         fontSize = 6;
                     }
-                    cellFont = new Font(pModel.getFont().getBaseFont(), fontSize, pModel.getFont().getStyle(),pModel.getFont().getColor());
+                    cellFont = new Font(pModel.getFont().getBaseFont(), fontSize, pModel.getFont().getStyle(), pModel.getFont().getColor());
                 } else if (pModel.isAdaptive() && pModel.getFont() == null) {
 //				自适应且未提供字体
                     fontSize = getRatioFontSizePro(pModel.getRatio(), mc, pModel.getMaxSize(), pageSize, sumMarginLeftRight, bfChinese.getPostscriptFontName());
@@ -705,7 +699,8 @@ public class JwglxtXscjzbUtil {
                     }
                     cellFont = new Font(bfChinese, fontSize, Font.NORMAL);
                 } else if (!pModel.isAdaptive() && pModel.getFont() != null) {
-                    cellFont = new Font(bfChinese, pModel.getFont().getSize(), pModel.getFont().getStyle(),pModel.getFont().getColor());;
+                    cellFont = new Font(bfChinese, pModel.getFont().getSize(), pModel.getFont().getStyle(), pModel.getFont().getColor());
+                    ;
                 } else if (!pModel.isAdaptive() && pModel.getFont() == null) {
                     cellFont = new Font(bfChinese, pModel.getMaxSize(), Font.NORMAL);
                 }
@@ -888,7 +883,7 @@ public class JwglxtXscjzbUtil {
      */
     public String formatDecimal(String value, int scale) {
         String result;
-        if (!value.matches("-?[0-9]*.[0-9]*")|| scale < 0) {
+        if (!value.matches("-?[0-9]*.[0-9]*") || scale < 0) {
             result = value;
             return result;
         }
@@ -898,7 +893,7 @@ public class JwglxtXscjzbUtil {
         if (scale == 0) {
             result = String.valueOf((int) f1);
         }
-        if(result.startsWith(".")){
+        if (result.startsWith(".")) {
             result = "0" + result;
         }
         return result;
@@ -1142,7 +1137,7 @@ public class JwglxtXscjzbUtil {
      * @Params [perPageRowNum, pageColNum, scoreHeight, maxSize, arrays, bfChinese, marginLeftRight, rectangle, allXscjCellList, cellNummap, dataTable, dataArr, pdfPCellArr, height]
      * @date 2019/10/25 11:39
      */
-    public PdfPTable writeDataShoot(List<PdfPCell> PdfPCelllts,int perPageRowNum, int pageColNum, int scoreHeight, List<PdfPCell> allXscjCellList, HashMap<String, Integer> cellNummap, PdfPTable dataTable, PdfPTable[] dataArr, PdfPCell[] pdfPCellArr) throws IOException, DocumentException {
+    public PdfPTable writeDataShoot(List<PdfPCell> PdfPCelllts, int perPageRowNum, int pageColNum, int scoreHeight, List<PdfPCell> allXscjCellList, HashMap<String, Integer> cellNummap, PdfPTable dataTable, PdfPTable[] dataArr, PdfPCell[] pdfPCellArr) throws IOException, DocumentException {
         //定位
         int fromNum = cellNummap.get("fromNum");
         //写入列头
@@ -1168,7 +1163,7 @@ public class JwglxtXscjzbUtil {
             pdfPCellArr[x].addElement(dataArr[x]);
             dataTable.addCell(pdfPCellArr[x]);
         }
-		cellNummap.put("fromNum", fromNum);
+        cellNummap.put("fromNum", fromNum);
         return dataTable;
     }
 
