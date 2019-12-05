@@ -164,7 +164,21 @@ public class JwglxtXscjzbUtil {
         return unit;
     }
 
-
+    /**
+     * @return int
+     * @throws
+     * @description 获取自适应字体大小 中文  A4 纸
+     * @author lx(1661)
+     * @date 2019/6/29 15:31
+     * @see com.zfsoft.jwglxt.bygl.util.JwglxtXscjzbUtil#getRatioFontSizePro(double, String, int, Rectangle, float)
+     * @deprecated 用see里的这个
+     */
+    public int getRatioFontSize(double ratio, int length, int maxSize, boolean verticalVersion, float sumMarginLeftRight) {
+        double unit;
+        unit = getUnit(verticalVersion);
+        int resultSize = caculateFontSize(ratio, length, maxSize, verticalVersion, sumMarginLeftRight, unit);
+        return resultSize;
+    }
 
     /**
      * @创建人:liuxin
@@ -377,7 +391,7 @@ public class JwglxtXscjzbUtil {
             } else {
                 font = setFontRatioCnPro(0.99, 1, pModel.getMaxSize(), isVertical, sumMarginLeftRight, bfChinese);
             }
-            PdfPCell = PrintUtil.makeCell(mc, pModel.getHorizontalSpan(), pModel.getVerticalSpan(), pModel.getHorizontalAlignmentName(), pModel.getVerticalAlignmentName(), font);
+            PdfPCell = makeCell(mc, pModel.getHorizontalSpan(), pModel.getVerticalSpan(), pModel.getHorizontalAlignmentName(), pModel.getVerticalAlignmentName(), font);
             if (!requireBorder) {
                 PdfPCell = getBorderedCell(PdfPCell, 0);
             }
@@ -385,7 +399,38 @@ public class JwglxtXscjzbUtil {
         }
         return result;
     }
-
+    /**
+     * 构造一个自定义的cell<br/>
+     * 由于使用PdfPCellx无法合并行,所以此方法中一些属性无法使用.
+     *
+     * @param content 单元格内容
+     * @param colspan 合并列
+     * @param rowspan 合并行 (deprecated)
+     * @param align 横向对齐
+     * @param valign 纵向对齐
+     * @param font 单元格字体
+     * @return 生成的单元格
+     *
+     */
+    public static PdfPCell makeCell(String content, int colspan, int rowspan, int align, int valign, Font font) {
+        PdfPCell cell = null;
+        Paragraph paragraph =null;
+        //使用自定义字体
+        paragraph = new Paragraph(content, font);
+        cell = new PdfPCell(paragraph);
+        //设置colspan,同样的方法可以设置rowspan
+        if(colspan > 1){
+            cell.setColspan(colspan);
+        }
+        if(rowspan > 1) {
+            cell.setRowspan(rowspan);
+        }
+        //设置对齐
+        cell.setHorizontalAlignment(align);
+        cell.setVerticalAlignment(valign);
+        cell.setMinimumHeight(15);
+        return cell;
+    }
     /**
      * @description 水印加透明度参数
      * @author      刘鑫（1661）
@@ -465,7 +510,7 @@ public class JwglxtXscjzbUtil {
             } else if (!pModel.isAdaptive() && pModel.getFont() == null) {
                 cellFont = new Font(bfChinese, pModel.getMaxSize(), Font.NORMAL);
             }
-            PdfPCell = PrintUtil.makeCell(mc, pModel.getHorizontalSpan(), pModel.getVerticalSpan(), pModel.getHorizontalAlignmentName(), pModel.getVerticalAlignmentName(), cellFont);
+            PdfPCell = makeCell(mc, pModel.getHorizontalSpan(), pModel.getVerticalSpan(), pModel.getHorizontalAlignmentName(), pModel.getVerticalAlignmentName(), cellFont);
             //处理行高的关系
             int cacuHeight = caculateHeightByFontSize(fontSize);
             if (pModel.getHeight() <= cacuHeight) {
@@ -521,7 +566,7 @@ public class JwglxtXscjzbUtil {
             } else if (!pModel.isAdaptive() && pModel.getFont() == null) {
                 cellFont = new Font(bfChinese, pModel.getMaxSize(), Font.NORMAL);
             }
-            PdfPCell = PrintUtil.makeCell(mc, pModel.getHorizontalSpan(), pModel.getVerticalSpan(), pModel.getHorizontalAlignmentName(), pModel.getVerticalAlignmentName(), cellFont);
+            PdfPCell = makeCell(mc, pModel.getHorizontalSpan(), pModel.getVerticalSpan(), pModel.getHorizontalAlignmentName(), pModel.getVerticalAlignmentName(), cellFont);
             //处理行高的关系
             int cacuHeight = caculateHeightByFontSize(fontSize);
             if (pModel.getHeight() <= cacuHeight) {
@@ -568,7 +613,7 @@ public class JwglxtXscjzbUtil {
                 }
                 cellFont = new Font(bfChinese, fontSize, fonStyle);
             }
-            PdfPCell = PrintUtil.makeCell(mc, pModel.getHorizontalSpan(), pModel.getVerticalSpan(), pModel.getHorizontalAlignmentName(), pModel.getVerticalAlignmentName(), cellFont);
+            PdfPCell = makeCell(mc, pModel.getHorizontalSpan(), pModel.getVerticalSpan(), pModel.getHorizontalAlignmentName(), pModel.getVerticalAlignmentName(), cellFont);
             if (!requireBorder) {
                 PdfPCell = getBorderedCell(PdfPCell, 0);
             }
@@ -610,7 +655,7 @@ public class JwglxtXscjzbUtil {
             } else {
                 cellFont = new Font(bfChinese, fontSize, Font.NORMAL);
             }
-            PdfPCell = PrintUtil.makeCell(mc, pModel.getHorizontalSpan(), pModel.getVerticalSpan(), pModel.getHorizontalAlignmentName(), pModel.getVerticalAlignmentName(), cellFont);
+            PdfPCell = makeCell(mc, pModel.getHorizontalSpan(), pModel.getVerticalSpan(), pModel.getHorizontalAlignmentName(), pModel.getVerticalAlignmentName(), cellFont);
             PdfPCell.setBorder(border);
             if (pModel.getBorder() > 0) {
                 PdfPCell.setBorder(pModel.getBorder());
@@ -680,7 +725,7 @@ public class JwglxtXscjzbUtil {
 //                } else {
 //                    cellFont = new Font(bfChinese, fontSize, Font.NORMAL);
 //                }
-                PdfPCell = PrintUtil.makeCell(mc, pModel.getHorizontalSpan(), pModel.getVerticalSpan(), pModel.getHorizontalAlignmentName(), pModel.getVerticalAlignmentName(), cellFont);
+                PdfPCell = makeCell(mc, pModel.getHorizontalSpan(), pModel.getVerticalSpan(), pModel.getHorizontalAlignmentName(), pModel.getVerticalAlignmentName(), cellFont);
                 //统一设置边框
                 PdfPCell.setBorder(border);
 //			PdfPCell.setPaddingx(10,0,0,0);
