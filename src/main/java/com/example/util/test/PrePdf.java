@@ -811,6 +811,13 @@ public class PrePdf {
                 dataJA.add(dataTemp);
             }
         }
+        dataTemp = new JSONObject();
+        dataTemp.put("tinyTitle", "以下空白");
+        dataTemp.put("isTinyTitle", true);
+        dataTemp.put("horizontalAlignment", PdfPCell.ALIGN_CENTER);
+        dataTemp.put("verticalAlignment", PdfPCell.ALIGN_MIDDLE);
+        dataTemp.put("isAdaptive", true);
+        dataJA.add(dataTemp);
         return dataJA;
     }
     /**
@@ -1009,6 +1016,7 @@ public class PrePdf {
         int numCols = loopProperties.getIntValue("numCols");
         int numRows = loopProperties.getIntValue("numRows");
         int cellHeight = loopProperties.getIntValue("cellHeight");
+        int headHeight = loopProperties.getIntValue("headHeight");
         int[] colsArr = transJAToIntArr(colsRadioArr);
         String[] headArr = transJAToStrArr(colsHeadArr);
         PdfPTable[] colTables = new PdfPTable[repeat];
@@ -1058,7 +1066,7 @@ public class PrePdf {
 
         List<PdfPCell> pdfPCellList = new ArrayList<>();
         if(1 == headed){
-        pdfPCellList = jUtil.getPdfPCelles(headArr, headFontSize, 25, BFCHINESE, 32, PageSize.A4.rotate());
+        pdfPCellList = jUtil.getPdfPCelles(headArr, headFontSize, headHeight, BFCHINESE, 32, PageSize.A4.rotate());
         }
         tempTable = jUtil.writeDataShoot(pdfPCellList, numRows, repeat, cellHeight, allXscjCellList, cellMap, dataTable, dataArr, pdfPCellArr);
 
@@ -1267,23 +1275,13 @@ public class PrePdf {
             }
             resultData = parameter;
         }
-        resultData = escapeStr(resultData);
+        resultData = jUtil.escapeStr(resultData);
         result.append(resultData);
         result.setFont(textFont);
         return result;
     }
 
-    /**
-     * @return java.lang.String
-     * @description 转义
-     * @author 刘鑫（1661）
-     * @Params [str]
-     * @date 2019/11/9 15:25
-     */
-    public String escapeStr(String str) {
-        String result = StringUtils.defaultIfEmpty(str, "").replace("{\\n}", "\n");
-        return result;
-    }
+
 
     /**
      * @return com.itextpdf.text.Paragraph

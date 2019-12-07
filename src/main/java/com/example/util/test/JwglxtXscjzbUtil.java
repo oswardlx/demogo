@@ -3,6 +3,7 @@ package com.example.util.test;
 import com.example.entity.PdfStuInfoModel;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.*;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -1179,11 +1180,21 @@ public class JwglxtXscjzbUtil {
     public List<PdfPCell> getPdfPCelles(String[] arrays, int maxSize, int height, BaseFont bfChinese, float marginLeftRight, Rectangle rectangle) throws IOException, DocumentException {
         List<PdfStuInfoModel> rowModelList = new ArrayList<>();
         for (int arrIndex = 0; arrIndex < arrays.length; arrIndex++) {
-            rowModelList.add(getPdfStuInfoModel(arrays[arrIndex], (double) 1, maxSize, height, 1, 1, PdfPCell.ALIGN_CENTER, PdfPCell.ALIGN_MIDDLE, false));
+            rowModelList.add(getPdfStuInfoModel(escapeStr(arrays[arrIndex]), (double) 1, maxSize, height, 1, 1, PdfPCell.ALIGN_CENTER, PdfPCell.ALIGN_MIDDLE, false));
         }
         return getCellListAdaptivePro(marginLeftRight, PdfPCell.BOX, rectangle, rowModelList, bfChinese);
     }
-
+    /**
+     * @return java.lang.String
+     * @description 转义
+     * @author 刘鑫（1661）
+     * @Params [str]
+     * @date 2019/11/9 15:25
+     */
+    public String escapeStr(String str) {
+        String result = StringUtils.defaultIfEmpty(str, "").replace("{\\n}", "\n");
+        return result;
+    }
     /**
      * @return java.util.List<java.lang.String>
      * @description 获取chunk的参数表达式提取map的key   input{aaa}dfs{bbbb}   output:aaa,bbb
