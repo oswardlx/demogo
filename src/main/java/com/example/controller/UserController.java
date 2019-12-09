@@ -65,7 +65,7 @@ public class UserController {
         return sb.toString();
     }
     @RequestMapping("/headers")
-    public String headers(HttpServletRequest req) {
+    public String headers(HttpServletRequest req,HttpServletResponse res) {
         StringBuilder sb = new StringBuilder();
         Cookie[] cookies = req.getCookies();
         HttpSession session = req.getSession();
