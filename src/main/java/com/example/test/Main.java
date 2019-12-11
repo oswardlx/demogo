@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 import java.util.regex.Pattern;
 
 public class Main {
@@ -64,20 +63,20 @@ public class Main {
 //        String filePath = "/templete/scorePrint/score_518021910234_2019-11-25_09_25_33.pdf";
 //        String filePathTemp = filePath.substring(filePath.indexOf(File.separator,2)+1, filePath.length());
 //        filePathTemp = filePathTemp.substring(filePathTemp.indexOf("templete"), filePathTemp.length());
-        List<String> gg  = new ArrayList<>();
-        gg.add("1");
-        gg.add("2");
-        gg.add("3");
-        gg.add("4");
-        gg.add("5");
-        gg.add("6");
-        gg.add("7");
-        gg.add("8");
-        gg.add("9");
-        gg.add("0");
-        gg.remove(4);
-//        gg.set(3,null);
-        System.out.println(gg.size());
+//        List<String> gg  = new ArrayList<>();
+//        gg.add("1");
+//        gg.add("2");
+//        gg.add("3");
+//        gg.add("4");
+//        gg.add("5");
+//        gg.add("6");
+//        gg.add("7");
+//        gg.add("8");
+//        gg.add("9");
+//        gg.add("0");
+//        gg.remove(4);
+////        gg.set(3,null);
+//        System.out.println(gg.size());
 //        String weatherUrl = "http://localhost:8089/testBoot/";
 ////        String userAgent = UserAgentUtil.getUserAgents();
 //        Connection.Response hh= Jsoup.connect(weatherUrl).execute();
@@ -88,18 +87,20 @@ public class Main {
 //        System.out.println(StringEscapeUtils.unescapeHtml4(str43));
 //        System.out.println(StringEscapeUtils.unescapeHtml4(str));
 //        System.out.println(StringEscapeUtils.escapeHtml3(str43));
-String str = null;
-        System.out.println(str.substring(0,str.contains("-")?str.indexOf("-"):str.length()));
-
-//        String str = "zfsoft123&amp;";
-//        String str2 = "zfsoft123$";
-//        String str43 = "fsoft12&amp;&lt;a href='http://www.qq.com'&gt;QQ&lt;/a&gt;&lt;script&gt";
-//        System.out.println(StringEscapeUtils.unescapeHtml4(str43));
-//        System.out.println(StringEscapeUtils.unescapeHtml4(str));
-        Scanner scan = new Scanner(System.in);
-        String gogo = scan.nextLine();
-        String ggf =  gogo.replace("{\\n}","\n");
+//String str = null;
+//        System.out.println(str.substring(0,str.contains("-")?str.indexOf("-"):str.length()));
+//
+////        String str = "zfsoft123&amp;";
+////        String str2 = "zfsoft123$";
+////        String str43 = "fsoft12&amp;&lt;a href='http://www.qq.com'&gt;QQ&lt;/a&gt;&lt;script&gt";
+////        System.out.println(StringEscapeUtils.unescapeHtml4(str43));
+////        System.out.println(StringEscapeUtils.unescapeHtml4(str));
+//        Scanner scan = new Scanner(System.in);
+//        String gogo = scan.nextLine();
+//        String ggf =  gogo.replace("{\\n}","\n");
 //        System.out.println(StringEscapeUtils.escapeHtml3(ggf));
+        String str1 = "7";
+        System.out.println(str1.matches("-?[0-9]*\\.?[0-9]*"));
     }
     public static boolean isInteger(String str) {
         Pattern pattern = Pattern.compile("^[\\-|\\+]?\\d+(\\.\\d+)?$");

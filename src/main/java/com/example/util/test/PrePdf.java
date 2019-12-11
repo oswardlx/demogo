@@ -129,15 +129,19 @@ public class PrePdf {
         celltemp0.setFixedHeight(20);
         celltemp0.setHorizontalAlignment(PdfPCell.ALIGN_RIGHT);
         table.addCell(celltemp0);
+        table.addCell(celltemp0);
         PdfPCell celltemp;
         celltemp = new PdfPCell(new Phrase("head1", textFont));
         celltemp.setFixedHeight(20);
         table.addCell(celltemp);
-        celltemp = new PdfPCell(new Phrase("fotter", textFont));
-        celltemp.setFixedHeight(20);
         table.addCell(celltemp);
         celltemp = new PdfPCell(new Phrase("fotter", textFont));
         celltemp.setFixedHeight(20);
+        table.addCell(celltemp);
+        table.addCell(celltemp);
+        celltemp = new PdfPCell(new Phrase("fotter", textFont));
+        celltemp.setFixedHeight(20);
+        table.addCell(celltemp);
         table.addCell(celltemp);
 
         for (int x = 0; x < 100; x++) {
@@ -153,7 +157,7 @@ public class PrePdf {
             table.addCell(celltemp);
         }
         table.completeRow();
-        table.setHeaderRows(2);
+        table.setHeaderRows(3);
         table.setFooterRows(1);
 
 //        Paragraph paragraph2 = new Paragraph();
@@ -657,13 +661,14 @@ public class PrePdf {
         document.open();
         long endTime = System.currentTimeMillis();
         System.out.println("\ngetPath cost: " + Math.abs(endTime - startTime) + " (ms)");
-        PdfPTable cPageNum = initLoop();
-        PdfPTable mountTable = (PdfPTable) (cPageNum.getRow(0).getCells()[0].getColumn().getCompositeElements().get(0));
-        int rows = mountTable.getRows().size();
-        int cjJAMount = rows;
-        int pageCount = cjJAMount / (properties.getIntValue("numRows") * properties.getIntValue("repeat"));
-        int pageResidue = cjJAMount % (properties.getIntValue("numRows") * properties.getIntValue("repeat"));
-        int pageNum = pageResidue > 0 ? pageCount + 1 : (pageCount > 0 ? pageCount : 1);
+//        PdfPTable cPageNum = initLoop();
+//        PdfPTable mountTable = (PdfPTable) (cPageNum.getRow(0).getCells()[0].getColumn().getCompositeElements().get(0));
+//        int rows = mountTable.getRows().size();
+//        int cjJAMount = rows;
+//        int pageCount = cjJAMount / (properties.getIntValue("numRows") * properties.getIntValue("repeat"));
+//        int pageResidue = cjJAMount % (properties.getIntValue("numRows") * properties.getIntValue("repeat"));
+//        int pageNum = pageResidue > 0 ? pageCount + 1 : (pageCount > 0 ? pageCount : 1);
+        int pageNum = 1;
         for (int x = 0; x < pageNum; x++) {
             document.newPage();
             ArrayList<Element> elements = countChange(mainArr);
@@ -1018,6 +1023,7 @@ public class PrePdf {
         int cellHeight = loopProperties.getIntValue("cellHeight");
         int headHeight = loopProperties.getIntValue("headHeight");
         int[] colsArr = transJAToIntArr(colsRadioArr);
+        int[] colsArrNew = new int[colsArr.length*repeat];
         String[] headArr = transJAToStrArr(colsHeadArr);
         PdfPTable[] colTables = new PdfPTable[repeat];
         //构造结果Table
@@ -1025,6 +1031,9 @@ public class PrePdf {
         float[] resultArr = new float[repeat];
 
         for (int x = 0; x < repeat; x++) {
+            for(int y = 0 ;y<colsArr.length;y++){
+                colsArrNew[x*colsArr.length+y] = colsArr[y];
+            }
             resultArr[x] = 1;
 //            //初始化分列Table
 //            tempTable = new PdfPTable(numCols);
@@ -1060,7 +1069,7 @@ public class PrePdf {
         JSONArray cjJA = initArray2();
         HashMap<String,Integer> cellMap = new HashMap<>();
         cellMap.put("fromNum",0);
-        List<PdfStuInfoModel> list = commonPcellxHPro(colsArr,numCols,numRows,repeat,cjJA,cellMap,"1111" ,loopProperties.getJSONArray("children"));
+        List<PdfStuInfoModel> list = commonPcellxHPro(colsArrNew,numCols,numRows,repeat,cjJA,cellMap,"1111" ,loopProperties.getJSONArray("children"));
         List<PdfPCell> allXscjCellList = jUtil.getCellListAdaptivePro(32, PdfPCell.BOX, PageSize.A4.rotate(), list, BFCHINESE);
         //列头+成绩数据
 
