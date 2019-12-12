@@ -1,6 +1,9 @@
 package com.example.test;
 
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -99,8 +102,19 @@ public class Main {
 //        String gogo = scan.nextLine();
 //        String ggf =  gogo.replace("{\\n}","\n");
 //        System.out.println(StringEscapeUtils.escapeHtml3(ggf));
-        String str1 = "7";
-        System.out.println(str1.matches("-?[0-9]*\\.?[0-9]*"));
+//        String str1 = "7";
+//        System.out.println(str1.matches("-?[0-9]*\\.?[0-9]*"));
+        JSONArray jsonArray = new JSONArray();
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("1","2");
+        jsonArray.add(jsonObject);
+        gogog(jsonArray);
+        System.out.println(jsonArray.getJSONObject(0).getString("1"));
+
+    }
+
+    public static void gogog(JSONArray jsonArray){
+        jsonArray.getJSONObject(0).put("1","3");
     }
     public static boolean isInteger(String str) {
         Pattern pattern = Pattern.compile("^[\\-|\\+]?\\d+(\\.\\d+)?$");

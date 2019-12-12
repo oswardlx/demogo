@@ -825,6 +825,7 @@ public class PrePdf {
         dataJA.add(dataTemp);
         return dataJA;
     }
+
     /**
      * @return java.util.ArrayList<com.itextpdf.text.Element>
      * @description 开始解析
@@ -1023,7 +1024,7 @@ public class PrePdf {
         int cellHeight = loopProperties.getIntValue("cellHeight");
         int headHeight = loopProperties.getIntValue("headHeight");
         int[] colsArr = transJAToIntArr(colsRadioArr);
-        int[] colsArrNew = new int[colsArr.length*repeat];
+        int[] colsArrNew = new int[colsArr.length * repeat];
         String[] headArr = transJAToStrArr(colsHeadArr);
         PdfPTable[] colTables = new PdfPTable[repeat];
         //构造结果Table
@@ -1031,18 +1032,11 @@ public class PrePdf {
         float[] resultArr = new float[repeat];
 
         for (int x = 0; x < repeat; x++) {
-            for(int y = 0 ;y<colsArr.length;y++){
-                colsArrNew[x*colsArr.length+y] = colsArr[y];
+            for (int y = 0; y < colsArr.length; y++) {
+                colsArrNew[x * colsArr.length + y] = colsArr[y];
             }
             resultArr[x] = 1;
-//            //初始化分列Table
-//            tempTable = new PdfPTable(numCols);
-//            tempTable.setWidths(colsArr);
-//            colTables[x] = tempTable;
         }
-//        PdfPTable result = new PdfPTable(resultArr);
-//        result.setWidthPercentage(resultWidthRadio);
-
 //        数据块布局
         PdfPTable dataTable = new PdfPTable(resultArr.length);
         dataTable.setWidths(resultArr);
@@ -1067,15 +1061,16 @@ public class PrePdf {
 
         //将数据写入
         JSONArray cjJA = initArray2();
-        HashMap<String,Integer> cellMap = new HashMap<>();
-        cellMap.put("fromNum",0);
-        List<PdfStuInfoModel> list = commonPcellxHPro(colsArrNew,numCols,numRows,repeat,cjJA,cellMap,"1111" ,loopProperties.getJSONArray("children"));
+        HashMap<String, Integer> cellMap = new HashMap<>();
+        cellMap.put("fromNum",jsonObject.getIntValue("fromNum"));
+        List<PdfStuInfoModel> list = commonPcellxHPro(colsArrNew, numCols, numRows, repeat, cjJA, cellMap, "1111", loopProperties.getJSONArray("children"));
+        jsonObject.put("fromNum",cellMap.get("fromNum"));
         List<PdfPCell> allXscjCellList = jUtil.getCellListAdaptivePro(32, PdfPCell.BOX, PageSize.A4.rotate(), list, BFCHINESE);
         //列头+成绩数据
 
         List<PdfPCell> pdfPCellList = new ArrayList<>();
-        if(1 == headed){
-        pdfPCellList = jUtil.getPdfPCelles(headArr, headFontSize, headHeight, BFCHINESE, 32, PageSize.A4.rotate());
+        if (1 == headed) {
+            pdfPCellList = jUtil.getPdfPCelles(headArr, headFontSize, headHeight, BFCHINESE, 32, PageSize.A4.rotate());
         }
         tempTable = jUtil.writeDataShoot(pdfPCellList, numRows, repeat, cellHeight, allXscjCellList, cellMap, dataTable, dataArr, pdfPCellArr);
 
@@ -1112,36 +1107,39 @@ public class PrePdf {
         tempTable.completeRow();
         return tempTable;
     }
+
     /**
-     *@description  JSONArray 转 int[]
-     *@author       lx
-     *@params       [ja]
-     *@return       int[]
-     *@exception
-     *@date         2019-12-05 21:05
+     * @return int[]
+     * @throws
+     * @description JSONArray 转 int[]
+     * @author lx
+     * @params [ja]
+     * @date 2019-12-05 21:05
      */
-    public int[] transJAToIntArr(JSONArray ja){
+    public int[] transJAToIntArr(JSONArray ja) {
         int[] result = new int[ja.size()];
         for (int x = 0; x < ja.size(); x++) {
             result[x] = ja.getInteger(x);
         }
         return result;
     }
+
     /**
-     *@description  JSONArray 转 int[]
-     *@author       lx
-     *@params       [ja]
-     *@return       int[]
-     *@exception
-     *@date         2019-12-05 21:05
+     * @return int[]
+     * @throws
+     * @description JSONArray 转 int[]
+     * @author lx
+     * @params [ja]
+     * @date 2019-12-05 21:05
      */
-    public String[] transJAToStrArr(JSONArray ja){
+    public String[] transJAToStrArr(JSONArray ja) {
         String[] result = new String[ja.size()];
         for (int x = 0; x < ja.size(); x++) {
             result[x] = ja.getString(x);
         }
         return result;
     }
+
     /**
      * @return com.itextpdf.text.pdf.PdfPTable
      * @description 初始化循环体
@@ -1289,7 +1287,6 @@ public class PrePdf {
         result.setFont(textFont);
         return result;
     }
-
 
 
     /**
@@ -1562,7 +1559,7 @@ public class PrePdf {
      * @Params [wdsBody, perSmallColNum, perPageRowNum, pageBigColNum, allXscjList, cellNummap, gsdygx]
      * @date 2019/10/31 15:47
      */
-    private List<PdfStuInfoModel> commonPcellxHPro(int[] wdsBody, int numCols, int numRows, int repeat, JSONArray dataJSONArr, HashMap<String, Integer> cellNummap, String gsdygx, JSONArray  colPropArr) {
+    private List<PdfStuInfoModel> commonPcellxHPro(int[] wdsBody, int numCols, int numRows, int repeat, JSONArray dataJSONArr, HashMap<String, Integer> cellNummap, String gsdygx, JSONArray colPropArr) {
         JwglxtXscjzbUtil jUtil = new JwglxtXscjzbUtil();
         //减去列头
         numRows--;
