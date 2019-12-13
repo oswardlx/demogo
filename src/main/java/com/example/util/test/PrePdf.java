@@ -25,6 +25,8 @@ public class PrePdf {
     public static BaseFont BFCHINESE;
     @Resource
     JwglxtXscjzbUtil jUtil;
+    @Resource
+    ReportModules rModel;
 
     static {
         try {
@@ -656,6 +658,8 @@ public class PrePdf {
         JSONObject docJson = nodeJsonObj;
         JSONArray mainArr = docJson.getJSONArray("children");
         Document document = initDocument(docJson);
+        int numRows = docJson.getIntValue("numRows");
+        int repeat = docJson.getIntValue("repeat");
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         PdfWriter.getInstance(document, os);
         document.open();
@@ -668,13 +672,17 @@ public class PrePdf {
 //        int pageCount = cjJAMount / (properties.getIntValue("numRows") * properties.getIntValue("repeat"));
 //        int pageResidue = cjJAMount % (properties.getIntValue("numRows") * properties.getIntValue("repeat"));
 //        int pageNum = pageResidue > 0 ? pageCount + 1 : (pageCount > 0 ? pageCount : 1);
-        int pageNum = 1;
+        JSONArray cjJA = initArray2();
+        Font pageFont = new Font(BFCHINESE,9);
+        int pageNum = caculatePageNum(numRows,repeat,cjJA);
         for (int x = 0; x < pageNum; x++) {
             document.newPage();
             ArrayList<Element> elements = countChange(mainArr);
             for (Element element : elements) {
                 document.add(element);
             }
+            PdfPTable paged = rModel.getOneLine("第"+(x+1)+ "页,共"+pageNum+"页",PdfPCell.ALIGN_RIGHT,PdfPCell.ALIGN_MIDDLE,PdfPCell.NO_BORDER,15,pageFont,32,PageSize.A4);
+            document.add(paged);
         }
         document.close();
         startTime = System.currentTimeMillis();
@@ -756,7 +764,7 @@ public class PrePdf {
             dataTemp.put("horizontalAlignment", PdfPCell.ALIGN_CENTER);
             dataTemp.put("verticalAlignment", PdfPCell.ALIGN_MIDDLE);
             dataJA.add(dataTemp);
-            for (int y = 0; y < 6; y++) {
+            for (int y = 0; y < 11; y++) {
                 dataTemp = new JSONObject();
                 dataTemp.put("text", "课程名称" + x + "" + y);
                 dataTemp.put("colSpan", 1);
@@ -796,7 +804,7 @@ public class PrePdf {
     public JSONArray initArray2() {
         JSONArray dataJA = new JSONArray();
         JSONObject dataTemp;
-        for (int x = 0; x < 8; x++) {
+        for (int x = 0; x < 10; x++) {
             dataTemp = new JSONObject();
             dataTemp.put("tinyTitle", "2012-2013学年 第" + x + "学期");
             dataTemp.put("isTinyTitle", true);
@@ -804,7 +812,7 @@ public class PrePdf {
             dataTemp.put("verticalAlignment", PdfPCell.ALIGN_MIDDLE);
             dataTemp.put("isAdaptive", true);
             dataJA.add(dataTemp);
-            for (int y = 0; y < 6; y++) {
+            for (int y = 0; y < 10; y++) {
                 dataTemp = new JSONObject();
                 dataTemp.put("isTinyTitle", false);
                 dataTemp.put("kcmc", "课程名称" + x + "" + y);
@@ -834,7 +842,6 @@ public class PrePdf {
      * @date 2019/10/22 22:03
      */
     public ArrayList<Element> countChange(JSONArray mainArr) throws IOException, DocumentException {
-
         ArrayList<Element> docElements;
         docElements = parseChildren(mainArr);
         return docElements;
@@ -1064,7 +1071,7 @@ public class PrePdf {
         HashMap<String, Integer> cellMap = new HashMap<>();
         cellMap.put("fromNum",jsonObject.getIntValue("fromNum"));
         List<PdfStuInfoModel> list = commonPcellxHPro(colsArrNew, numCols, numRows, repeat, cjJA, cellMap, "1111", loopProperties.getJSONArray("children"));
-        jsonObject.put("fromNum",cellMap.get("fromNum"));
+
         List<PdfPCell> allXscjCellList = jUtil.getCellListAdaptivePro(32, PdfPCell.BOX, PageSize.A4.rotate(), list, BFCHINESE);
         //列头+成绩数据
 
@@ -1073,7 +1080,7 @@ public class PrePdf {
             pdfPCellList = jUtil.getPdfPCelles(headArr, headFontSize, headHeight, BFCHINESE, 32, PageSize.A4.rotate());
         }
         tempTable = jUtil.writeDataShoot(pdfPCellList, numRows, repeat, cellHeight, allXscjCellList, cellMap, dataTable, dataArr, pdfPCellArr);
-
+        jsonObject.put("fromNum",cellMap.get("fromNum"));
 //        int fromNum = 0;
 //        //写入数据格子
 //        for (PdfPTable pt : colTables) {
@@ -1641,5 +1648,36 @@ public class PrePdf {
             e.printStackTrace();
         }
         return rowlList;
+    }
+    /**
+     * @return java.util.List<com.zfsoft.jwglxt.bygl.dao.xscjzbdy.entities.PdfStuInfoModel>
+     * @description 公共获取格子ModelList
+     * @author 刘鑫（1661）
+     * @Params [wdsBody, perSmallColNum, perPageRowNum, pageBigColNum, allXscjList, cellNummap, gsdygx]
+     * @date 2019/10/31 15:47
+     */
+    private int caculatePageNum(int numRows, int repeat, JSONArray dataJSONArr) {
+        //减去列头
+        numRows--;
+        //最大字体大小
+        //总行数
+        int sumRow = 0;
+        //页数
+        int pageNum = 1;
+        int modTemp = 0;
+        int pageNumTemp = 0;
+        int rowIndex = 0;
+        try {
+            if (dataJSONArr.size() > 0) {
+                sumRow = dataJSONArr.size();
+                modTemp = sumRow % (numRows * repeat);
+                pageNumTemp = sumRow / (numRows * repeat);
+                pageNum = modTemp == 0 ? pageNumTemp : pageNumTemp + 1;
+            }
+            return pageNum;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return pageNum;
     }
 }
