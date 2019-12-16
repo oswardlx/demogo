@@ -671,7 +671,7 @@ public class PrePdf {
 //        int cjJAMount = rows;
 //        int pageCount = cjJAMount / (properties.getIntValue("numRows") * properties.getIntValue("repeat"));
 //        int pageResidue = cjJAMount % (properties.getIntValue("numRows") * properties.getIntValue("repeat"));
-//        int pageNum = pageResidue > 0 ? pageCount + 1 : (pageCount > 0 ? pageCount : 1);
+//        int pageNum = pageResidue > 0 ? pageCount + 1 :  (pageCount > 0 ? pageCount : 1);
         JSONArray cjJA = initArray2();
         Font pageFont = new Font(BFCHINESE,9);
         int pageNum = caculatePageNum(numRows,repeat,cjJA);
